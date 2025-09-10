@@ -19,8 +19,7 @@ export default tseslint.config(
         tsconfigRootDir: import.meta.dirname,
       },
     },
-  },
-  perfectionist.configs["recommended-natural"],
+  }, 
   {
     rules: {
       "@typescript-eslint/unbound-method": "off",
@@ -35,6 +34,9 @@ export default tseslint.config(
     },
     rules: {
       ...vitest.configs.recommended.rules,
+      "@typescript-eslint/unbound-method": "off",
+      "perfectionist/sort-named-imports": "off",
+      "perfectionist/sort-objects": "off",
     },
   }
 );
