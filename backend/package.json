@@ -21,6 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/sequelize": "^6.12.0",
+    "bcryptjs": "^3.0.2",
     "express": "^5.1.0",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7"

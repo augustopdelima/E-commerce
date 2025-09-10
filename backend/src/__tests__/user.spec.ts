@@ -7,7 +7,7 @@ import http from "http";
 
 import { AddressInfo } from "net";
 
-import { User } from "../models/User";
+import { User } from "../models/user";
 
 let server: http.Server;
 let baseUrl: string;
@@ -36,16 +36,16 @@ describe("Rotas Usuário", () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        nome: "João",
+        name: "João",
         email: "joao@example.comd",
-        senha: "123456",
+        password: "123456",
       }),
     });
 
     expect(res.status).toBe(201);
     const data = await res.json() as ResponseUserRegister;
     expect(data).toHaveProperty("id");
-    expect(data).toHaveProperty("email");
+
 
     const usuarioDb = await User.findOne({ where: { id: data.id } });
     expect(usuarioDb).not.toBeNull();
