@@ -3,11 +3,11 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../database";
 
 export class User extends Model {
-  public email!: string;
-  public id!: number;
-  public name!: string;
-  public password!: string;
-  public type!: "admin" | "cliente";
+  declare email: string;
+  declare id: number;
+  declare name: string;
+  declare password: string;
+  declare type: "admin" | "cliente";
 }
 
 User.init(
