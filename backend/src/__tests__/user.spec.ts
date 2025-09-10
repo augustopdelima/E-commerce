@@ -28,6 +28,8 @@ afterAll(async () => {
 interface ResponseUserRegister {
   id: string;
   email: string;
+  name:string,
+  type:string,
 }
 
 interface UserDb extends ResponseUserRegister {
@@ -36,7 +38,6 @@ interface UserDb extends ResponseUserRegister {
 
 describe("Rotas Usuário", () => {
   it("Deve registrar um novo usuário", async () => {
-
     const email = "joao@example.com";
 
     const res = await fetch(`${baseUrl}/user/register`, {
@@ -50,7 +51,7 @@ describe("Rotas Usuário", () => {
     });
 
     expect(res.status).toBe(201);
-    const data = await res.json() as ResponseUserRegister;
+    const data = (await res.json()) as ResponseUserRegister;
     expect(data).toHaveProperty("id");
 
     const userDb = await User.findOne({ where: { id: data.id } });
@@ -61,5 +62,38 @@ describe("Rotas Usuário", () => {
     expect(userData.email).not.toBeNull();
     expect(userData.email).toBe(email);
     expect(userData.type).toBe("cliente");
+  });
+
+  it("Deve listar e retornar o usuário cadastrado", async () => {
+    const email = "joao2@example.com";
+    const name = "João2";
+    const type = "cliente";
+
+    const res = await fetch(`${baseUrl}/user/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        email,
+        password: "123456",
+      }),
+    });
+
+    expect(res.status).toBe(201);
+    const data = (await res.json()) as ResponseUserRegister;
+    expect(data).toHaveProperty("id");
+
+    const dataUser = await fetch(`${baseUrl}/user/${data.id}`, {
+      method: "GET",
+    });
+
+
+    expect(dataUser.status).toBe(200);
+    const user = (await dataUser.json()) as ResponseUserRegister;
+
+    expect(user.id).toBe(data.id);
+    expect(user.email).toBe(email);
+    expect(user.type).toBe(type);
+    expect(user.name).toBe(name);
   });
 });
