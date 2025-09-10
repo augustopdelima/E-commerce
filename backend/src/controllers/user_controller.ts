@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { UserService } from "../services/user_service";
+import { UserServiceInterface } from "../services/user_service";
 
 interface UserRegisterBody {
   name: string;
@@ -7,14 +7,12 @@ interface UserRegisterBody {
   password: string;
 }
 
+export function UserController (userService:UserServiceInterface) {
 
-
-export const UserController = {
-
-    async register(req:Request, res: Response) {
+    async function register(req:Request, res: Response) {
         try {
             const { name, email, password } = req.body as UserRegisterBody
-            const user = await UserService.register(name, email, password);
+            const user = await userService.register(name, email, password);
 
             res.status(201).json({
                 id:user.id,
@@ -24,5 +22,9 @@ export const UserController = {
         } catch (err: unknown) {
             res.status(400).json({erro:err});
         }
+    }
+
+    return {
+        register,
     }
 }

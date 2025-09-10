@@ -30,14 +30,21 @@ interface ResponseUserRegister {
   email: string;
 }
 
+interface UserDb extends ResponseUserRegister {
+  type: string;
+}
+
 describe("Rotas Usuário", () => {
   it("Deve registrar um novo usuário", async () => {
+
+    const email = "joao@example.com";
+
     const res = await fetch(`${baseUrl}/user/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: "João",
-        email: "joao@example.comd",
+        email,
         password: "123456",
       }),
     });
@@ -46,10 +53,13 @@ describe("Rotas Usuário", () => {
     const data = await res.json() as ResponseUserRegister;
     expect(data).toHaveProperty("id");
 
+    const userDb = await User.findOne({ where: { id: data.id } });
 
-    const usuarioDb = await User.findOne({ where: { id: data.id } });
-    expect(usuarioDb).not.toBeNull();
-    expect(usuarioDb?.email).not.toBeNull();
-    expect(usuarioDb?.email).toBe(data.email);
+    const userData = userDb?.dataValues as UserDb;
+
+    expect(userData).not.toBeNull();
+    expect(userData.email).not.toBeNull();
+    expect(userData.email).toBe(email);
+    expect(userData.type).toBe("cliente");
   });
 });
