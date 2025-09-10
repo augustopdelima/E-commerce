@@ -22,13 +22,19 @@ export default tseslint.config(
   },
   perfectionist.configs["recommended-natural"],
   {
+    rules: {
+      "@typescript-eslint/unbound-method": "off",
+      "perfectionist/sort-named-imports": "off",
+      "perfectionist/sort-objects": "off",
+    },
+  },
+  {
     files: ["**/*.test.ts", "**/*.spec.ts"],
     plugins: {
       vitest,
     },
     rules: {
       ...vitest.configs.recommended.rules,
-      "@typescript-eslint/unbound-method": "off",
     },
   }
 );

@@ -1,10 +1,13 @@
-import { Sequelize } from 'sequelize';
+import { Sequelize, Options } from "sequelize";
 
-// Inicializa o Sequelize usando SQLite
-export const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: './database.sqlite',
+const DEFAULT_FILE = "./database.sqlite";
+
+const sequelizeOptions: Options = {
+  dialect: "sqlite",
   logging: false,
-});
+  storage: process.env.DB ?? DEFAULT_FILE,
+};
+
+export const sequelize: Sequelize = new Sequelize(sequelizeOptions);
 
 export default sequelize;
