@@ -61,13 +61,13 @@ describe("Rotas Usuário", () => {
     expect(userData).not.toBeNull();
     expect(userData.email).not.toBeNull();
     expect(userData.email).toBe(email);
-    expect(userData.type).toBe("cliente");
+    expect(userData.type).toBe("client");
   });
 
   it("Deve listar e retornar o usuário cadastrado", async () => {
     const email = "joao2@example.com";
     const name = "João2";
-    const type = "cliente";
+    const type = "client";
 
     const res = await fetch(`${baseUrl}/user/register`, {
       method: "POST",

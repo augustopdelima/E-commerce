@@ -1,7 +1,7 @@
 import { User } from "../models/user";
 import bcrypt from "bcryptjs";
 
-const DEFAULT_TYPE_USER = "cliente";
+const DEFAULT_TYPE_USER = "client";
 
 export interface UserServiceInterface {
   register: (name: string, email: string, password: string) => Promise<User>;
