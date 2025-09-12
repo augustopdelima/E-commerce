@@ -1,18 +1,37 @@
 import { Product } from "../models/product";
 
-export async function createProduct(data: {
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-}) {
-  return await Product.create(data);
+export interface ProductServiceInterface {
+  createProduct: (data: {
+    name: string;
+    description: string;
+    price: number;
+    stock: number;
+  }) => Promise<Product>;
+  getProductById: (id: number) => Promise<Product | null>;
+  listProducts: () => Promise<Product[]>;
 }
 
-export async function getProductById(id: number) {
-  return await Product.findByPk(id);
-}
+export function ProductService(): ProductServiceInterface {
+  async function createProduct(data: {
+    name: string;
+    description: string;
+    price: number;
+    stock: number;
+  }) {
+    return await Product.create(data);
+  }
 
-export async function listProducts() {
-  return await Product.findAll();
+  async function getProductById(id: number) {
+    return await Product.findByPk(id);
+  }
+
+  async function listProducts() {
+    return await Product.findAll();
+  }
+
+  return {
+    createProduct,
+    getProductById,
+    listProducts,
+  };
 }
