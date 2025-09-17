@@ -46,9 +46,38 @@ export function ProductController(productService: ProductServiceInterface) {
     }
   }
 
+  async function updateProduct(req: Request, res: Response) {
+    try {
+      const { name, description, price, stock } = req.body as ProductDataBody;
+      const product = await productService.getProductById(
+        Number(req.params.id)
+      );
+      if (!product)
+        return res.status(404).json({ error: "Produto não encontrado" });
+      await product.update({ name, description, price, stock });
+      res.json(product);
+    } catch (error) {
+      res.status(400).json({ error: "Erro ao editar produto", log: error });
+    }
+  }
+
+  async function deleteProduct(req: Request, res: Response) {
+    try {
+      const product = await productService.getProductById(Number(req.params.id));
+      if (!product)
+        return res.status(404).json({ error: "Produto não encontrado" });
+      await product.destroy();
+      res.status(204).send();
+    } catch (error) {
+      res.status(400).json({ error: "Erro ao excluir produto", log: error });
+    }
+  }
+
   return {
     registerProduct,
     getProduct,
     getAllProducts,
+    updateProduct,
+    deleteProduct,
   };
 }
