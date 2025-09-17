@@ -7,7 +7,7 @@ export class User extends Model {
   declare id: number;
   declare name: string;
   declare password: string;
-  declare type: "admin" | "cliente";
+  declare type: "admin" | "client";
 }
 
 User.init(
@@ -30,11 +30,11 @@ User.init(
       allowNull: false,
       type: DataTypes.STRING,
     },
-    type: {
-      allowNull: false,
-      defaultValue: "cliente",
-      type: DataTypes.ENUM("admin", "cliente"),
-    },
+      type: {
+        allowNull: false,
+        defaultValue: "client",
+        type: DataTypes.ENUM("admin", "client"),
+      },
   },
   {
     sequelize,
