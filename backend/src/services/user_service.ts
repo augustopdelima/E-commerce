@@ -1,4 +1,4 @@
-import { User } from "../models/user";
+import { User } from "../models";
 import bcrypt from "bcryptjs";
 
 const DEFAULT_TYPE_USER = "client";
@@ -29,13 +29,11 @@ export function UserService(): UserServiceInterface {
       const user = await User.findOne({ where: { id } });
 
       if (!user) {
- 
         throw new Error("Usuário não encontrado!");
       }
 
-      return user.get({plain:true}) as User;
+      return user.get({ plain: true }) as User;
     } catch (err) {
-      
       console.error("Erro ao buscar usuário:", err);
       throw err;
     }
