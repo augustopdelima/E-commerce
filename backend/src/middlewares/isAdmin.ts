@@ -15,7 +15,7 @@ export async function isAdmin(req: AuthRequest, res: Response, next: NextFunctio
       return res.status(403).json({ error: "Acesso restrito a administradores" });
     }
     next();
-  } catch (error) {
-    res.status(500).json({ error: "Erro ao verificar permissão" });
+  } catch (error:unknown) {
+    res.status(500).json({ message: "Erro ao verificar permissão", error });
   }
 }
