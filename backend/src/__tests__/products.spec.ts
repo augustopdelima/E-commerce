@@ -3,7 +3,6 @@ import { sequelize } from "../database";
 import app from "../app";
 import http from "http";
 import { AddressInfo } from "net";
-import { Product } from "../models/product";
 
 let server: http.Server;
 let baseUrl: string;
@@ -34,7 +33,7 @@ describe("Rotas Produto", () => {
     });
 
     expect(res.status).toBe(201);
-    const data = await res.json() as any;
+    const data = (await res.json()) as any;
     expect(data).toHaveProperty("id");
     expect(data.name).toBe("Bola de basquete");
   });
@@ -45,7 +44,7 @@ describe("Rotas Produto", () => {
     });
 
     expect(res.status).toBe(200);
-    const produtos = await res.json() as any[];
+    const produtos = (await res.json()) as any[];
     expect(produtos.length).toBeGreaterThan(0);
   });
 });

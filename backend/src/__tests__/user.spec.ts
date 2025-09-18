@@ -25,15 +25,17 @@ afterAll(async () => {
   server.close();
 });
 
-interface ResponseUserRegister {
+interface UserDb {
   id: string;
   email: string;
-  name:string,
-  type:string,
+  name: string;
+  type: string;
 }
 
-interface UserDb extends ResponseUserRegister {
-  type: string;
+interface ResponseUserRegister {
+  message: string;
+  user: UserDb;
+  token: string;
 }
 
 describe("Rotas Usuário", () => {
@@ -52,9 +54,9 @@ describe("Rotas Usuário", () => {
 
     expect(res.status).toBe(201);
     const data = (await res.json()) as ResponseUserRegister;
-    expect(data).toHaveProperty("id");
+    expect(data).toHaveProperty("user.id");
 
-    const userDb = await User.findOne({ where: { id: data.id } });
+    const userDb = await User.findOne({ where: { id: data.user.id } });
 
     const userData = userDb?.dataValues as UserDb;
 
@@ -62,6 +64,7 @@ describe("Rotas Usuário", () => {
     expect(userData.email).not.toBeNull();
     expect(userData.email).toBe(email);
     expect(userData.type).toBe("client");
+    expect(data.message).toBe("Usuário cadastrado com sucesso");
   });
 
   it("Deve listar e retornar o usuário cadastrado", async () => {
@@ -81,19 +84,18 @@ describe("Rotas Usuário", () => {
 
     expect(res.status).toBe(201);
     const data = (await res.json()) as ResponseUserRegister;
-    expect(data).toHaveProperty("id");
+    expect(data).toHaveProperty("user.id");
 
-    const dataUser = await fetch(`${baseUrl}/user/${data.id}`, {
+    const dataUser = await fetch(`${baseUrl}/user/${data.user.id}`, {
       method: "GET",
     });
 
-
     expect(dataUser.status).toBe(200);
-    const user = (await dataUser.json()) as ResponseUserRegister;
+    const dUser = (await dataUser.json()) as UserDb;
 
-    expect(user.id).toBe(data.id);
-    expect(user.email).toBe(email);
-    expect(user.type).toBe(type);
-    expect(user.name).toBe(name);
+    expect(dUser.id).toBe(data.user.id);
+    expect(dUser.email).toBe(email);
+    expect(dUser.type).toBe(type);
+    expect(dUser.name).toBe(name);
   });
 });
