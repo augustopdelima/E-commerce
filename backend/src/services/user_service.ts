@@ -1,3 +1,4 @@
+import { userInfo } from "os";
 import { User } from "../models";
 import bcrypt from "bcryptjs";
 
@@ -6,6 +7,7 @@ const DEFAULT_TYPE_USER = "client";
 export interface UserServiceInterface {
   register: (name: string, email: string, password: string) => Promise<User>;
   getUser: (id: string) => Promise<User>;
+  findUserByEmail: (email: string) => Promise<User | null>;
 }
 
 export function UserService(): UserServiceInterface {
@@ -39,8 +41,13 @@ export function UserService(): UserServiceInterface {
     }
   }
 
+  async function findUserByEmail(email: string) {
+    return User.findOne({ where: { email } });
+  }
+
   return {
     register,
     getUser,
+    findUserByEmail,
   };
 }
