@@ -1,5 +1,6 @@
 import { Request, RequestHandler, Response } from "express";
 import { UserServiceInterface } from "../services/user_service";
+import bcrypt from "bcrypt";
 
 import jwt from "jsonwebtoken";
 
@@ -9,10 +10,36 @@ interface UserRegisterBody {
   password: string;
 }
 
+interface UserLoginBody {
+  email: string;
+  password: string;
+}
+
+interface RefreshTokenBody {
+  refreshToken: string;
+}
+
 export function UserController(
   userService: UserServiceInterface,
-  SECRET: string
+  SECRET: string,
+  REFRESH_SECRET: string
 ) {
+  function generateTokens(user: { id: string; type: string }) {
+    const accessToken = jwt.sign(
+      { id: user.id, role: user.type },
+      SECRET,
+      { expiresIn: "1h" } // curto prazo
+    );
+
+    const refreshToken = jwt.sign(
+      { id: user.id, role: user.type },
+      REFRESH_SECRET,
+      { expiresIn: "7d" } // longo prazo
+    );
+
+    return { accessToken, refreshToken };
+  }
+
   async function register(req: Request, res: Response) {
     try {
       const { name, email, password } = req.body as UserRegisterBody;
@@ -27,8 +54,9 @@ export function UserController(
 
       const user = await userService.register(name, email, password);
 
-      const token = jwt.sign({ id: user.id, role: user.type }, SECRET, {
-        expiresIn: "1d",
+      const tokens = generateTokens({
+        id: user.id.toString(),
+        type: user.type,
       });
 
       return res.status(201).json({
@@ -38,13 +66,10 @@ export function UserController(
           email: user.email,
           type: user.type,
         },
-        token,
+        ...tokens,
       });
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        return res.status(400).json({ erro: err.message });
-      }
-
+      console.log(err);
       return res.status(400).json({ erro: "Algo deu errado" });
     }
   }
@@ -61,16 +86,88 @@ export function UserController(
         type: user.type,
       });
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        return res.status(400).json({ erro: err.message });
-      }
+      console.log(err);
 
       return res.status(400).json({ erro: "Algo deu errado" });
     }
   };
 
+  async function login(req: Request, res: Response) {
+    try {
+      const { email, password } = req.body as UserLoginBody;
+
+      const user = await userService.findUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ error: "Email ou senha inválidos!" });
+      }
+
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        return res.status(401).json({ error: "Email ou senha inválidos!" });
+      }
+
+      const tokens = generateTokens({
+        id: user.id.toString(),
+        type: user.type,
+      });
+
+      return res.json({
+        message: "Login realizado com sucesso!",
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          type: user.type,
+        },
+        ...tokens,
+      });
+    } catch (err: unknown) {
+      console.log(err);
+      return res.status(400).json({ erro: "Erro interno no login" });
+    }
+  }
+
+  function refresh(req: Request, res: Response) {
+    const { refreshToken } = req.body as RefreshTokenBody;
+
+    if (!refreshToken) {
+      return res.status(401).json({ error: "Refresh token não fornecido" });
+    }
+
+    try {
+      const decoded = jwt.verify(refreshToken, REFRESH_SECRET) as {
+        id: string;
+        type: string;
+      };
+
+      const accessToken = jwt.sign(
+        { id: decoded.id, type: decoded.type },
+        SECRET,
+        {
+          expiresIn: "1h",
+        }
+      );
+      const newRefreshToken = jwt.sign(
+        { id: decoded.id, type: decoded.type },
+        REFRESH_SECRET,
+        {
+          expiresIn: "7d",
+        }
+      );
+
+      return res.json({ accessToken, refreshToken: newRefreshToken });
+    } catch (err:unknown) {
+      console.log(err);
+      return res
+        .status(403)
+        .json({ error: "Refresh token inválido ou expirado" });
+    }
+  }
+
   return {
     register,
     user,
+    login,
+    refresh
   };
 }

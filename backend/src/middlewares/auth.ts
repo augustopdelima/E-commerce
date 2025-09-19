@@ -34,6 +34,7 @@ export const authMiddleware = (
     req.user = decoded; // adiciona usuário à requisição
     next();
   } catch (err:unknown) {
-    return res.status(401).json({ error: "Token inválido ou expirado", err });
+    console.log(err);
+    return res.status(401).json({ error: "Token inválido ou expirado"});
   }
 };

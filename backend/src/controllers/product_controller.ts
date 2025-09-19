@@ -20,7 +20,8 @@ export function ProductController(productService: ProductServiceInterface) {
       });
       res.status(201).json(product);
     } catch (error) {
-      res.status(400).json({ error: "Erro ao cadastrar produto", log: error });
+      console.log(error);
+      res.status(400).json({ error: "Erro ao cadastrar produto"});
     }
   }
 
@@ -33,7 +34,8 @@ export function ProductController(productService: ProductServiceInterface) {
         return res.status(404).json({ error: "Produto não encontrado" });
       res.json(product);
     } catch (error) {
-      res.status(400).json({ error: "Erro ao buscar produto", log: error });
+      console.log(error);
+      res.status(400).json({ error: "Erro ao buscar produto"});
     }
   }
 
@@ -42,7 +44,8 @@ export function ProductController(productService: ProductServiceInterface) {
       const products = await productService.listProducts();
       res.json(products);
     } catch (error) {
-      res.status(400).json({ error: "Erro ao listar produtos", log: error });
+      console.log(error);
+      res.status(400).json({ error: "Erro ao listar produtos" });
     }
   }
 
@@ -57,7 +60,8 @@ export function ProductController(productService: ProductServiceInterface) {
       await product.update({ name, description, price, stock });
       res.json(product);
     } catch (error) {
-      res.status(400).json({ error: "Erro ao editar produto", log: error });
+      console.log(error);
+      res.status(400).json({ error: "Erro ao editar produto"});
     }
   }
 
@@ -69,7 +73,8 @@ export function ProductController(productService: ProductServiceInterface) {
       await product.destroy();
       res.status(204).send();
     } catch (error) {
-      res.status(400).json({ error: "Erro ao excluir produto", log: error });
+      console.log(error);
+      res.status(400).json({ error: "Erro ao excluir produto"});
     }
   }
 
