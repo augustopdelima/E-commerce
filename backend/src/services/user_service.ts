@@ -7,6 +7,7 @@ export interface UserServiceInterface {
   register: (name: string, email: string, password: string) => Promise<User>;
   getUser: (id: string) => Promise<User>;
   findUserByEmail: (email: string) => Promise<User | null>;
+  findUserById: (id:number) => Promise<User| null >;
   updateUser: (
     id: number,
     data: {
@@ -52,6 +53,10 @@ export function UserService(): UserServiceInterface {
     return User.findOne({ where: { email } });
   }
 
+  async function findUserById(id:number) {
+    return User.findOne({ where:{ id }})
+  }
+
   async function updateUser(
     id: number,
     data: { name?: string; password?: string; email?:string }
@@ -76,5 +81,6 @@ export function UserService(): UserServiceInterface {
     getUser,
     findUserByEmail,
     updateUser,
+    findUserById,
   };
 }

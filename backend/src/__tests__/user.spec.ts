@@ -12,7 +12,9 @@ import { User } from "../models/user";
 let server: http.Server;
 let baseUrl: string;
 
-let userAdminId =  0;
+let userAdminId = 0;
+let userClientId = "";
+let token = "";
 
 beforeAll(async () => {
   await sequelize.sync({ force: true });
@@ -23,16 +25,42 @@ beforeAll(async () => {
 
   const bcrypt = await import("bcrypt");
   const hashed = await bcrypt.hash("123456", 10);
-  
-  const user =  await User.create({
+
+  const user = await User.create({
     name: "Admin",
     email: "admin@example.com",
-    password: hashed, 
+    password: hashed,
     type: "admin",
   });
 
   userAdminId = user.id;
-  
+
+  // Criar usuário inicial para testar update
+  const res = await fetch(`${baseUrl}/user/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: "João",
+      email: "joao4@example.com",
+      password: "123456",
+    }),
+  });
+
+  const data = (await res.json()) as ResponseUserRegister;
+  userClientId = data.user.id;
+
+
+  const loginRes = await fetch(`${baseUrl}/user/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: "joao4@example.com",
+      password: "123456",
+    }),
+  });
+
+  const loginData = (await loginRes.json()) as LoginResponse;
+  token = loginData.accessToken;
 });
 
 afterAll(async () => {
@@ -61,10 +89,9 @@ interface LoginResponse {
 }
 
 interface TokensResponse {
-  accessToken:string,
-  refreshToken:string,
+  accessToken: string;
+  refreshToken: string;
 }
-
 
 describe("Rotas Usuário", () => {
   it("Deve registrar um novo usuário", async () => {
@@ -100,10 +127,9 @@ describe("Rotas Usuário", () => {
     const name = "João2";
     const type = "client";
 
-
     const res = await fetch(`${baseUrl}/user/register`, {
       method: "POST",
-      headers: { "Content-Type": "application/json"},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name,
         email,
@@ -117,7 +143,7 @@ describe("Rotas Usuário", () => {
 
     const dataUser = await fetch(`${baseUrl}/user/${data.user.id}`, {
       method: "GET",
-      headers:{"userid":userAdminId.toString()}
+      headers: { userid: userAdminId.toString() },
     });
 
     expect(dataUser.status).toBe(200);
@@ -162,7 +188,10 @@ describe("Rotas Usuário", () => {
     const res = await fetch(`${baseUrl}/user/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "naoexiste@example.com", password: "123456" }),
+      body: JSON.stringify({
+        email: "naoexiste@example.com",
+        password: "123456",
+      }),
     });
 
     expect(res.status).toBe(401);
@@ -179,8 +208,8 @@ describe("Rotas Usuário", () => {
     });
 
     expect(loginRes.status).toBe(200);
-    const loginData = await loginRes.json() as TokensResponse;
-    const oldRefreshToken = loginData.refreshToken ;
+    const loginData = (await loginRes.json()) as TokensResponse;
+    const oldRefreshToken = loginData.refreshToken;
 
     const refreshRes = await fetch(`${baseUrl}/user/refresh`, {
       method: "POST",
@@ -188,9 +217,8 @@ describe("Rotas Usuário", () => {
       body: JSON.stringify({ refreshToken: oldRefreshToken }),
     });
 
-
     expect(refreshRes.status).toBe(200);
-    const refreshData = await refreshRes.json() as TokensResponse;
+    const refreshData = (await refreshRes.json()) as TokensResponse;
 
     // Verifica tokens
     expect(refreshData).toHaveProperty("accessToken");
@@ -210,5 +238,50 @@ describe("Rotas Usuário", () => {
     expect(refreshRes.status).toBe(403);
     const data = await refreshRes.json();
     expect(data).toHaveProperty("error");
+  });
+
+  it("Deve atualizar os dados de um usuário existente", async () => {
+    const res = await fetch(`${baseUrl}/user/${userClientId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        name: "João da Silva",
+        email: "joaosilva@example.com",
+      }),
+    });
+
+    expect(res.status).toBe(200);
+    const updated = (await res.json()) as ResponseUserRegister;
+    expect(updated.user).toHaveProperty("id", userClientId);
+    expect(updated.user.name).toBe("João da Silva");
+    expect(updated.user.email).toBe("joaosilva@example.com");
+  });
+
+  it("Deve retornar 404 ao tentar atualizar um usuário inexistente", async () => {
+    const res = await fetch(`${baseUrl}/user/99999`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json",  Authorization: `Bearer ${token}`, },
+      body: JSON.stringify({
+        name: "Nome Fake",
+        email: "fake@example.com",
+      }),
+    });
+
+    expect(res.status).toBe(404);
+  });
+
+  it("Deve retornar 400 ao enviar dados inválidos", async () => {
+    const res = await fetch(`${baseUrl}/user/${userClientId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: "email-invalido", // formato incorreto
+      }),
+    });
+
+    expect(res.status).toBe(401);
   });
 });

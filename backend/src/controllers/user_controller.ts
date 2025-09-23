@@ -25,7 +25,6 @@ interface TokenPayload {
   type: string;
 }
 
-
 export function UserController(
   userService: UserServiceInterface,
   SECRET: string,
@@ -41,7 +40,7 @@ export function UserController(
     const refreshToken = jwt.sign(
       { id: user.id, type: user.type },
       REFRESH_SECRET,
-      { expiresIn: "7d"} // longo prazo
+      { expiresIn: "7d" } // longo prazo
     );
 
     return { accessToken, refreshToken };
@@ -140,7 +139,7 @@ export function UserController(
       return res.status(401).json({ error: "Refresh token não fornecido" });
     }
     try {
-      const decoded = jwt.verify(refreshToken, REFRESH_SECRET) as TokenPayload
+      const decoded = jwt.verify(refreshToken, REFRESH_SECRET) as TokenPayload;
 
       const accessToken = jwt.sign(
         { id: decoded.id, type: decoded.type },
@@ -150,11 +149,11 @@ export function UserController(
         }
       );
       const newRefreshToken = jwt.sign(
-        { id: decoded.id, type: decoded.type},
+        { id: decoded.id, type: decoded.type },
         REFRESH_SECRET,
         {
           expiresIn: "7d",
-          jwtid:crypto.randomUUID(),
+          jwtid: crypto.randomUUID(),
         }
       );
 
@@ -170,20 +169,25 @@ export function UserController(
   async function update(req: AuthRequest, res: Response) {
     try {
       const { id } = req.params;
-      const userId = req.user?.id; // vem do authMiddleware
+      const userId = Number(req.user?.id); // vem do authMiddleware
       const userType = req.user?.type;
 
-      // só o próprio usuário ou admin pode atualizar
+
+      const existingUser = await userService.findUserById(Number(id));
+      if (!existingUser) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
+      }
+    
       if (userId !== Number(id) && userType !== "admin") {
         return res.status(403).json({ error: "Acesso negado" });
       }
-
+      
       const { name, password, email } = req.body as UserRegisterBody;
 
       const updatedUser = await userService.updateUser(Number(id), {
         name,
         password,
-        email
+        email,
       });
 
       if (!updatedUser) {
