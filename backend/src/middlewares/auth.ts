@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 interface JwtPayload {
   id: number;
-  role: string;
+  type: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -13,6 +13,12 @@ const SECRET = process.env.SECRET!;
 export interface AuthRequest extends Request {
   user?: JwtPayload;
 }
+
+export interface AuthUser {
+  id: number;
+  type: string;
+}
+
 
 export const authMiddleware = (
   req: AuthRequest,

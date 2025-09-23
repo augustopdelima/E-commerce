@@ -1,6 +1,7 @@
 import { Request, RequestHandler, Response } from "express";
 import { UserServiceInterface } from "../services/user_service";
 import bcrypt from "bcrypt";
+import { AuthRequest } from "../middlewares/auth";
 
 import jwt from "jsonwebtoken";
 
@@ -19,6 +20,12 @@ interface RefreshTokenBody {
   refreshToken: string;
 }
 
+interface TokenPayload {
+  id: number;
+  type: string;
+}
+
+
 export function UserController(
   userService: UserServiceInterface,
   SECRET: string,
@@ -26,15 +33,15 @@ export function UserController(
 ) {
   function generateTokens(user: { id: string; type: string }) {
     const accessToken = jwt.sign(
-      { id: user.id, role: user.type },
+      { id: user.id, type: user.type },
       SECRET,
       { expiresIn: "1h" } // curto prazo
     );
 
     const refreshToken = jwt.sign(
-      { id: user.id, role: user.type },
+      { id: user.id, type: user.type },
       REFRESH_SECRET,
-      { expiresIn: "7d" } // longo prazo
+      { expiresIn: "7d"} // longo prazo
     );
 
     return { accessToken, refreshToken };
@@ -129,16 +136,11 @@ export function UserController(
 
   function refresh(req: Request, res: Response) {
     const { refreshToken } = req.body as RefreshTokenBody;
-
     if (!refreshToken) {
       return res.status(401).json({ error: "Refresh token não fornecido" });
     }
-
     try {
-      const decoded = jwt.verify(refreshToken, REFRESH_SECRET) as {
-        id: string;
-        type: string;
-      };
+      const decoded = jwt.verify(refreshToken, REFRESH_SECRET) as TokenPayload
 
       const accessToken = jwt.sign(
         { id: decoded.id, type: decoded.type },
@@ -148,15 +150,16 @@ export function UserController(
         }
       );
       const newRefreshToken = jwt.sign(
-        { id: decoded.id, type: decoded.type },
+        { id: decoded.id, type: decoded.type},
         REFRESH_SECRET,
         {
           expiresIn: "7d",
+          jwtid:crypto.randomUUID(),
         }
       );
 
       return res.json({ accessToken, refreshToken: newRefreshToken });
-    } catch (err:unknown) {
+    } catch (err: unknown) {
       console.log(err);
       return res
         .status(403)
@@ -164,10 +167,50 @@ export function UserController(
     }
   }
 
+  async function update(req: AuthRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const userId = req.user?.id; // vem do authMiddleware
+      const userType = req.user?.type;
+
+      // só o próprio usuário ou admin pode atualizar
+      if (userId !== Number(id) && userType !== "admin") {
+        return res.status(403).json({ error: "Acesso negado" });
+      }
+
+      const { name, password, email } = req.body as UserRegisterBody;
+
+      const updatedUser = await userService.updateUser(Number(id), {
+        name,
+        password,
+        email
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
+      }
+
+      return res.json({
+        message: "Usuário atualizado com sucesso",
+        user: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          name: updatedUser.name,
+          type: updatedUser.type,
+        },
+      });
+    } catch (err: unknown) {
+      return res.status(400).json({
+        error: err instanceof Error ? err.message : "Erro ao atualizar usuário",
+      });
+    }
+  }
+
   return {
     register,
     user,
     login,
-    refresh
+    refresh,
+    update,
   };
 }
