@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --color-primary: #2E3B69;
+  --color-secondary: #FFFFFF;
+  --color-text-light: #FFFFFF;
+  --color-text-dark: #2E3B69;
+
+  --font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --max-header-height: 120px;
+}
+
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-family);
+  background-color: #f9f9f9;
+}
