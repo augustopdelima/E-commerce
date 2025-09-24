@@ -30,7 +30,7 @@ export function CheckoutService(): CheckoutServiceInterface {
         for (const item of cartItems) {
             const product = await Product.findByPk(item.productId);
             if (!product) {
-                throw new Error(`Product with ID ${item.productId} not found`);
+                throw new Error(`Product with ID ${String(item.productId)} not found`);
             }
             if (product.stock < item.quantity) {
                 throw new Error(`Insufficient stock for product ${product.name}`);
