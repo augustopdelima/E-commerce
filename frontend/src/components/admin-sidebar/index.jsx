@@ -7,6 +7,7 @@ export default function AdminSidebar() {
       <nav className="sidebar-nav">
         <NavLink
           to="/admin"
+          end
           className={({ isActive }) =>
             isActive ? "sidebar-link active" : "sidebar-link"
           }

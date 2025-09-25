@@ -8,6 +8,7 @@ import { Link } from "react-router";
  * @param {Object} props
  * @param {Object} props.product - Objeto do produto.
  * @param {number|string} props.product.id - ID do produto.
+ * @param {string} props.product.imageUrl - URL da imagem do produto.
  * @param {string} props.product.name - Nome do produto.
  * @param {string} props.product.description - Descrição do produto.
  * @param {number} props.product.price - Preço do produto.
@@ -19,6 +20,11 @@ const ProductCard = ({ product }) => {
   return (
     <div className="product-card">
       <h3 className="product-name">{product.name}</h3>
+      <img
+        src={product.imageUrl || "http://localhost:3000/uploads/placeholder.png"}
+        alt={product.name}
+        className="product-image"
+      />
       <p className="product-description">{product.description}</p>
       <p className="product-price">R$ {product.price.toFixed(2)}</p>
       <p className="product-stock">Estoque: {product.stock}</p>

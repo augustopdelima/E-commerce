@@ -14,10 +14,18 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
+.product-image {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
 .product-name {
   font-size: 1.2rem;
   font-weight: bold;
 }
+
 
 .product-description {
   font-size: 0.9rem;

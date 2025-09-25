@@ -25,28 +25,34 @@ export default function RegisterProducts() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    
+
     const formData = new FormData(event.target);
+    const imageFile = formData.get("imageUrl"); 
+
     const productData = {
       name: formData.get("name"),
       description: formData.get("description"),
       price: parseFloat(formData.get("price")),
       stock: parseInt(formData.get("stock"), 10),
+      imageFile, 
     };
 
-    productService.createProduct(productData).then(() => { 
-      alert("Produto registrado com sucesso!");
-    });
+    productService
+      .createProduct(productData)
+      .then(() => alert("Produto registrado com sucesso!"))
+      .catch((err) => console.error(err));
 
-   
     event.target.reset();
   }
-
 
   return (
     <div className="register-products-container">
       <h1>Registrar Produtos</h1>
       <form className="register-products-form" onSubmit={handleSubmit}>
+        <label>
+          URL da Imagem:
+          <input type="file" name="imageUrl" required accept="image/*" />
+        </label>
         <label>
           Nome do Produto:
           <input type="text" name="name" required />
