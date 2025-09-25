@@ -1,7 +1,8 @@
 import { User } from "../models";
 import bcrypt from "bcryptjs";
-
+import { emailFormatChecker } from "../../utils/email_format_checker";
 const DEFAULT_TYPE_USER = "client";
+
 
 export interface UserServiceInterface {
   register: (name: string, email: string, password: string) => Promise<User>;
@@ -64,12 +65,22 @@ export function UserService(): UserServiceInterface {
     const user = await User.findByPk(id);
     if (!user) return null;
 
+    if(!data.email) {
+      throw new Error("Email inválido!")
+    }
+
+    if(!emailFormatChecker(data.email)) {
+      throw new Error("Formato de email não é válido!");
+    }
+
     if (data.name) user.name = data.name;
     if (data.password) {
       const hashed = await bcrypt.hash(data.password, 10);
       user.password = hashed;
     }
-    if(data.email) user.email = data.email;
+    
+    user.email = data.email;
+    
 
     await user.save();
 
