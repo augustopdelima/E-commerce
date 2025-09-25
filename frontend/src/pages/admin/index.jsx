@@ -1,5 +1,6 @@
-import RegisterProducts from "./register-products";
-export { RegisterProducts };
+export { default as RegisterProducts } from "./register-products";
+
+export { default as AdminHome } from "./home";
 
 import { Navigate } from "react-router";
 import { useAuth } from "../../context/auth/auth_helpers";

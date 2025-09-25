@@ -1,9 +1,18 @@
 import "./index.css"; // CSS separado
 import { Link } from "react-router";
+
 /**
- * Componente para exibir um card de produto
+ * Componente para exibir um card de produto.
+ *
+ * @component
  * @param {Object} props
- * @param {Object} props.product - Objeto produto com id, name, description, price e stock
+ * @param {Object} props.product - Objeto do produto.
+ * @param {number|string} props.product.id - ID do produto.
+ * @param {string} props.product.name - Nome do produto.
+ * @param {string} props.product.description - Descrição do produto.
+ * @param {number} props.product.price - Preço do produto.
+ * @param {number} props.product.stock - Quantidade em estoque.
+ * @returns {JSX.Element} Card do produto.
  */
 
 const ProductCard = ({ product }) => {
