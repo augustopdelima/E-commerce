@@ -15,8 +15,8 @@ export const productService = {
     return res.data;
   },
   async createProduct(productData) {
-    const res = await api.post('/product', productData);
-    return res.data;
+    const res = await api.post('/product/register', productData);
+    return res;
   },
   async updateProduct(id, productData) {
     const res = await api.put(`/product/${id}`, productData);

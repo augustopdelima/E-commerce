@@ -9,10 +9,7 @@ export const authService = {
   async login(email, password) {
     const res = await api.post("/user/login", { email, password });
     return res;
-  },
-  async logout() {
-    await api.post("/user/logout");
-  },
+  }, 
   async refreshToken() {
     try {
       const res = await api.post("/user/refresh");

@@ -35,6 +35,12 @@
   margin-bottom: 12px;
 }
 
+.product-link {
+  margin-bottom: 12px;
+  text-decoration: none;
+  color: #007bff;
+}
+
 .btn-add-cart {
   padding: 8px 12px;
   background-color: #007bff;

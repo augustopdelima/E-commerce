@@ -7,9 +7,9 @@
 :root {
   --color-primary: #2E3B69;
   --color-secondary: #FFFFFF;
+  --color-third: #fc0707;
   --color-text-light: #FFFFFF;
   --color-text-dark: #2E3B69;
-
   --font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   --max-header-height: 120px;
 }
@@ -27,6 +27,8 @@ body, #root {
   padding: 0;
   height: 100vh;
   display: flex;
+  justify-content: center;
+  align-items: center;
   flex-direction: column; /* header em cima, main abaixo */
 }
 
@@ -35,4 +37,6 @@ main.container {
   padding: 20px;
   overflow-y: auto; /* permite scroll se o conteúdo ultrapassar a tela */
   background-color: #f5f5f5;
+  max-width: 1200px;
+  width: 100%;
 }

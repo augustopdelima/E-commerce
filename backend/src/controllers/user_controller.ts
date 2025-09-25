@@ -103,6 +103,7 @@ export function UserController(
     }
   };
 
+
   async function login(req: Request, res: Response) {
     try {
       const { email, password } = req.body as UserLoginBody;

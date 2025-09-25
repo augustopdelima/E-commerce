@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { authService } from "../../services/auth";
 import { AuthContext } from "./auth_helpers";
-
+ 
 /**
  * Provedor de autenticação responsável por gerenciar
  * o estado do usuário, tokens de acesso e atualização.
@@ -25,6 +25,13 @@ export const AuthProvider = ({ children }) => {
   /** @type {boolean} Indica se há um usuário autenticado */
   const isAuthenticated = !!accessToken && !!user;
 
+  /** @type {[boolean, Function]} Indica se ainda está carregando do storage */
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  /**
+   * Carrega o estado de autenticação do armazenamento local ao montar o componente.
+   */
+
   useEffect(() => {
     const storedToken = localStorage.getItem("accessToken");
     const storedUser = localStorage.getItem("user");
@@ -40,6 +47,7 @@ export const AuthProvider = ({ children }) => {
       setUser(JSON.parse(storedUser));
       setRefreshToken(storedRefreshToken);
     }
+    setLoadingUser(false);
   }, []);
 
   /**
@@ -52,7 +60,7 @@ export const AuthProvider = ({ children }) => {
    */
   const login = async (email, password) => {
     const res = await authService.login(email, password);
-
+    console.log(res);
     if (res?.data.accessToken && res?.data.user) {
       setAccessToken(res.data.accessToken);
       setUser(res.data.user);
@@ -71,10 +79,10 @@ export const AuthProvider = ({ children }) => {
    * @async
    * @returns {Promise<void>}
    */
-  const logout = async () => {
-    await authService.logout();
+  const logout = async () => { 
     setAccessToken(null);
     setUser(null);
+    setRefreshToken(null);
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
     localStorage.removeItem("refreshToken");
@@ -105,6 +113,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         refresh,
         isAuthenticated,
+        loadingUser
       }}
     >
       {children}
