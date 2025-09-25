@@ -49,7 +49,6 @@ beforeAll(async () => {
   const data = (await res.json()) as ResponseUserRegister;
   userClientId = data.user.id;
 
-
   const loginRes = await fetch(`${baseUrl}/user/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -85,13 +84,8 @@ interface LoginResponse {
   message: string;
   user: { id: string; email: string; type: string };
   accessToken: string;
-  refreshToken: string;
 }
 
-interface TokensResponse {
-  accessToken: string;
-  refreshToken: string;
-}
 
 describe("Rotas Usuário", () => {
   it("Deve registrar um novo usuário", async () => {
@@ -169,7 +163,6 @@ describe("Rotas Usuário", () => {
     expect(data.user.email).toBe("admin@example.com");
     expect(data.user.type).toBe("admin");
     expect(data).toHaveProperty("accessToken");
-    expect(data).toHaveProperty("refreshToken");
   });
 
   it("Não deve logar com senha incorreta", async () => {
@@ -200,40 +193,41 @@ describe("Rotas Usuário", () => {
   });
 
   it("Deve gerar novos tokens usando refreshToken", async () => {
-    //  Faz login
     const loginRes = await fetch(`${baseUrl}/user/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: "admin@example.com", password: "123456" }),
     });
 
-    expect(loginRes.status).toBe(200);
-    const loginData = (await loginRes.json()) as TokensResponse;
-    const oldRefreshToken = loginData.refreshToken;
+    const rawCookies = loginRes.headers.get("set-cookie");
+    // extrair apenas o valor do cookie
+    const refreshTokenCookie = rawCookies?.split(";")[0];
 
+    expect(loginRes.status).toBe(200);
+    const loginData = await loginRes.json() as  { accessToken:string};
+    const oldAccessToken = loginData.accessToken;
+
+    
     const refreshRes = await fetch(`${baseUrl}/user/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken: oldRefreshToken }),
+      headers: { "Content-Type": "application/json", Cookie: refreshTokenCookie ?? ""},
     });
 
+    
     expect(refreshRes.status).toBe(200);
-    const refreshData = (await refreshRes.json()) as TokensResponse;
+    const refreshData = (await refreshRes.json()) as { accessToken: string };
 
-    // Verifica tokens
+    
     expect(refreshData).toHaveProperty("accessToken");
-    expect(refreshData).toHaveProperty("refreshToken");
-
-    // O novo refreshToken deve ser diferente do antigo
-    expect(refreshData.refreshToken).not.toBe(oldRefreshToken);
+    expect(refreshData.accessToken).not.toBe(oldAccessToken);
   });
 
   it("Deve falhar se refreshToken for inválido", async () => {
     const refreshRes = await fetch(`${baseUrl}/user/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken: "token_invalido" }),
+      headers: { "Content-Type": "application/json", Cookie: "refreshtoken=token_invalido"},
     });
+
 
     expect(refreshRes.status).toBe(403);
     const data = await refreshRes.json();
@@ -263,7 +257,10 @@ describe("Rotas Usuário", () => {
   it("Deve retornar 404 ao tentar atualizar um usuário inexistente", async () => {
     const res = await fetch(`${baseUrl}/user/99999`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json",  Authorization: `Bearer ${token}`, },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({
         name: "Nome Fake",
         email: "fake@example.com",
@@ -276,12 +273,12 @@ describe("Rotas Usuário", () => {
   it("Deve retornar 400 ao enviar dados inválidos", async () => {
     const res = await fetch(`${baseUrl}/user/${userClientId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({
         email: "email-invalido", // formato incorreto
       }),
     });
 
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(400);
   });
 });
