@@ -2,7 +2,6 @@ import { Request, RequestHandler, Response } from "express";
 import { UserServiceInterface } from "../services/user_service";
 import bcrypt from "bcrypt";
 import { AuthRequest } from "../middlewares/auth";
-import { parseCookies } from "../../utils/parser_cookies";
 
 import jwt from "jsonwebtoken";
 
@@ -17,6 +16,9 @@ interface UserLoginBody {
   password: string;
 }
 
+interface RefreshTokenBody {
+  refreshToken: string;
+}
 
 interface TokenPayload {
   id: number;
@@ -28,7 +30,7 @@ export function UserController(
   SECRET: string,
   REFRESH_SECRET: string
 ) {
-  const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
+  
 
   function generateTokens(user: { id: string; type: string }) {
     const accessToken = jwt.sign(
@@ -65,10 +67,7 @@ export function UserController(
         type: user.type,
       });
 
-      res.cookie("refreshtoken", tokens.refreshToken, {
-        httpOnly: true,
-        maxAge: MAX_AGE,
-      });
+      
 
       return res.status(201).json({
         message: "Usuário cadastrado com sucesso",
@@ -78,6 +77,7 @@ export function UserController(
           type: user.type,
         },
         accessToken: tokens.accessToken,
+        refreshToke: tokens.refreshToken,
       });
     } catch (err: unknown) {
       console.log(err);
@@ -122,10 +122,7 @@ export function UserController(
         type: user.type,
       });
 
-      res.cookie("refreshtoken", tokens.refreshToken, {
-        httpOnly: true,
-        maxAge: MAX_AGE,
-      });
+     
 
       return res.json({
         message: "Login realizado com sucesso!",
@@ -136,6 +133,7 @@ export function UserController(
           type: user.type,
         },
         accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
       });
     } catch (err: unknown) {
       console.log(err);
@@ -145,10 +143,9 @@ export function UserController(
 
   function refresh(req: Request, res: Response) {
     
-    const cookies = parseCookies(req.headers.cookie);
+    const { refreshToken } = req.body as RefreshTokenBody;
     
-    const refreshToken = cookies.refreshtoken;
-
+    
     if (!refreshToken) {
       return res.status(401).json({ error: "Refresh token não fornecido" });
     }
@@ -174,12 +171,7 @@ export function UserController(
         }
       );
 
-      res.cookie("refreshtoken", newRefreshToken, {
-        httpOnly: true,
-        maxAge: MAX_AGE,
-      });
-
-      return res.status(200).json({ accessToken });
+      return res.status(200).json({ accessToken, refreshToken: newRefreshToken});
     } catch (err: unknown) {
       console.log(err);
       return res

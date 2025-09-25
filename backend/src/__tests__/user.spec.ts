@@ -199,33 +199,37 @@ describe("Rotas Usuário", () => {
       body: JSON.stringify({ email: "admin@example.com", password: "123456" }),
     });
 
-    const rawCookies = loginRes.headers.get("set-cookie");
-    // extrair apenas o valor do cookie
-    const refreshTokenCookie = rawCookies?.split(";")[0];
 
     expect(loginRes.status).toBe(200);
-    const loginData = await loginRes.json() as  { accessToken:string};
+    const loginData = await loginRes.json() as  { accessToken:string, refreshToken:string};
     const oldAccessToken = loginData.accessToken;
-
+    const oldRefreshToken = loginData.refreshToken;
     
     const refreshRes = await fetch(`${baseUrl}/user/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Cookie: refreshTokenCookie ?? ""},
+      headers: { "Content-Type": "application/json",},
+      body: JSON.stringify({
+        refreshToken: oldRefreshToken
+      })
     });
 
     
     expect(refreshRes.status).toBe(200);
-    const refreshData = (await refreshRes.json()) as { accessToken: string };
+    const refreshData = (await refreshRes.json()) as { accessToken: string, refreshToken:string };
 
     
     expect(refreshData).toHaveProperty("accessToken");
     expect(refreshData.accessToken).not.toBe(oldAccessToken);
+    expect(refreshData.refreshToken).not.toBe(oldRefreshToken);
   });
 
   it("Deve falhar se refreshToken for inválido", async () => {
     const refreshRes = await fetch(`${baseUrl}/user/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Cookie: "refreshtoken=token_invalido"},
+      headers: { "Content-Type": "application/json", },
+      body: JSON.stringify({
+        refreshToken: "aaa"
+      }),
     });
 
 
