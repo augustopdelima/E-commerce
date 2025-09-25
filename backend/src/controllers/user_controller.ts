@@ -3,7 +3,6 @@ import { UserServiceInterface } from "../services/user_service";
 import bcrypt from "bcrypt";
 import { AuthRequest } from "../middlewares/auth";
 
-
 import jwt from "jsonwebtoken";
 
 interface UserRegisterBody {
@@ -20,7 +19,6 @@ interface UserLoginBody {
 interface RefreshTokenBody {
   refreshToken: string;
 }
-
 
 interface TokenPayload {
   id: number;
@@ -151,7 +149,6 @@ export function UserController(
     if (!refreshToken) {
       return res.status(401).json({ error: "Refresh token não fornecido" });
     }
-
 
     try {
       const decoded = jwt.verify(refreshToken, REFRESH_SECRET) as TokenPayload;
