@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { authService } from "../../services/auth";
+import { useState, useEffect, useCallback } from "react";
+import { authService,  setupInterceptors } from "../../services/auth";
 import { AuthContext } from "./auth_helpers";
  
 /**
@@ -50,6 +50,8 @@ export const AuthProvider = ({ children }) => {
     setLoadingUser(false);
   }, []);
 
+  
+
   /**
    * Realiza o login do usuário e armazena os tokens.
    *
@@ -79,14 +81,14 @@ export const AuthProvider = ({ children }) => {
    * @async
    * @returns {Promise<void>}
    */
-  const logout = async () => { 
+  const logout = useCallback(async () => { 
     setAccessToken(null);
     setUser(null);
     setRefreshToken(null);
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
     localStorage.removeItem("refreshToken");
-  };
+  }, []);
 
   /**
    * Atualiza o token de acesso do usuário.
@@ -94,14 +96,20 @@ export const AuthProvider = ({ children }) => {
    * @async
    * @returns {Promise<void>}
    */
-  const refresh = async () => {
-    const newToken = await authService.refreshToken();
-    if (newToken.data.accessToken) {
-      setAccessToken(newToken.data.accessToken);
-      setRefreshToken(newToken.data.refreshToken);
-      localStorage.setItem("accessToken", newToken);
+  const refresh = useCallback( async () => {
+    const newTokens = await authService.refreshToken();
+    if (newTokens.data.accessToken) {
+      setAccessToken(newTokens.data.accessToken);
+      setRefreshToken(newTokens.data.refreshToken);
+      localStorage.setItem("accessToken", newTokens.data.accessToken);
+      localStorage.setItem("refreshToken", newTokens.data.refreshToken);
     }
-  };
+  }, []);
+
+
+  useEffect(() => {
+    setupInterceptors({ accessToken, refresh, logout });
+  }, [accessToken, refresh, logout]);
 
   return (
     <AuthContext.Provider
