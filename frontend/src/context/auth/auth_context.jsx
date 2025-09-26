@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { authService } from "../../services/auth";
+import { useState, useEffect, useCallback } from "react";
+import { authService,  setupInterceptors } from "../../services/auth";
 import { AuthContext } from "./auth_helpers";
-
+ 
 /**
  * Provedor de autenticação responsável por gerenciar
  * o estado do usuário, tokens de acesso e atualização.
@@ -25,6 +25,13 @@ export const AuthProvider = ({ children }) => {
   /** @type {boolean} Indica se há um usuário autenticado */
   const isAuthenticated = !!accessToken && !!user;
 
+  /** @type {[boolean, Function]} Indica se ainda está carregando do storage */
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  /**
+   * Carrega o estado de autenticação do armazenamento local ao montar o componente.
+   */
+
   useEffect(() => {
     const storedToken = localStorage.getItem("accessToken");
     const storedUser = localStorage.getItem("user");
@@ -40,7 +47,10 @@ export const AuthProvider = ({ children }) => {
       setUser(JSON.parse(storedUser));
       setRefreshToken(storedRefreshToken);
     }
+    setLoadingUser(false);
   }, []);
+
+  
 
   /**
    * Realiza o login do usuário e armazena os tokens.
@@ -52,7 +62,7 @@ export const AuthProvider = ({ children }) => {
    */
   const login = async (email, password) => {
     const res = await authService.login(email, password);
-
+    console.log(res);
     if (res?.data.accessToken && res?.data.user) {
       setAccessToken(res.data.accessToken);
       setUser(res.data.user);
@@ -71,14 +81,14 @@ export const AuthProvider = ({ children }) => {
    * @async
    * @returns {Promise<void>}
    */
-  const logout = async () => {
-    await authService.logout();
+  const logout = useCallback(async () => { 
     setAccessToken(null);
     setUser(null);
+    setRefreshToken(null);
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
     localStorage.removeItem("refreshToken");
-  };
+  }, []);
 
   /**
    * Atualiza o token de acesso do usuário.
@@ -86,14 +96,20 @@ export const AuthProvider = ({ children }) => {
    * @async
    * @returns {Promise<void>}
    */
-  const refresh = async () => {
-    const newToken = await authService.refreshToken();
-    if (newToken.data.accessToken) {
-      setAccessToken(newToken.data.accessToken);
-      setRefreshToken(newToken.data.refreshToken);
-      localStorage.setItem("accessToken", newToken);
+  const refresh = useCallback( async () => {
+    const newTokens = await authService.refreshToken();
+    if (newTokens.data.accessToken) {
+      setAccessToken(newTokens.data.accessToken);
+      setRefreshToken(newTokens.data.refreshToken);
+      localStorage.setItem("accessToken", newTokens.data.accessToken);
+      localStorage.setItem("refreshToken", newTokens.data.refreshToken);
     }
-  };
+  }, []);
+
+
+  useEffect(() => {
+    setupInterceptors({ accessToken, refresh, logout });
+  }, [accessToken, refresh, logout]);
 
   return (
     <AuthContext.Provider
@@ -105,6 +121,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         refresh,
         isAuthenticated,
+        loadingUser
       }}
     >
       {children}

@@ -6,6 +6,7 @@ export interface ProductServiceInterface {
     description: string;
     price: number;
     stock: number;
+    imageUrl: string;
   }) => Promise<Product>;
   getProductById: (id: number) => Promise<Product | null>;
   listProducts: () => Promise<Product[]>;
@@ -17,6 +18,7 @@ export function ProductService(): ProductServiceInterface {
     description: string;
     price: number;
     stock: number;
+    imageUrl: string;
   }) {
     return await Product.create(data);
   }

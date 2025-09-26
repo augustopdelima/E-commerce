@@ -1,13 +1,8 @@
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: 'http://localhost:3000',
-  withCredentials: true,
-});
+import { api } from "./api.js";
 
 export const productService = {
   async getAllProducts() {
-    const res = await api.get('/product');
+    const res = await api.get("/product");
     return res.data;
   },
   async getProductById(id) {
@@ -15,14 +10,51 @@ export const productService = {
     return res.data;
   },
   async createProduct(productData) {
-    const res = await api.post('/product', productData);
+    const formData = new FormData();
+
+    formData.append("name", productData.name);
+    formData.append("description", productData.description);
+    formData.append("price", productData.price);
+    formData.append("stock", productData.stock);
+
+    if (productData.imageFile) {
+      formData.append("image", productData.imageFile);
+    }
+
+    const res = await api.post("/product/register", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return res;
+  },
+  async updateProduct(id, productData, accessToken, userId) {
+    const formData = new FormData();
+
+    formData.append("name", productData.name);
+    formData.append("description", productData.description);
+    formData.append("price", productData.price);
+    formData.append("stock", productData.stock);
+
+    if (productData.imageFile) {
+      formData.append("image", productData.imageFile);
+    }
+
+    const res = await api.put(`/product/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
+        userid: userId,
+      },
+    });
     return res.data;
   },
-  async updateProduct(id, productData) {
-    const res = await api.put(`/product/${id}`, productData);
-    return res.data;
-  },
-  async deleteProduct(id) {
-    await api.delete(`/product/${id}`);
+  async deleteProduct(id, accessToken, userId) {
+    console.log("Deleting product with access token:", accessToken, userId);
+    await api.delete(`/product/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        userid: userId,
+      },
+    });
   },
 };

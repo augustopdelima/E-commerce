@@ -1,6 +1,7 @@
 import app from "./app";
 import { sequelize } from "./database";
 
+
 const port = process.env.PORT ?? "3001";
 
 app.listen(port, () => {

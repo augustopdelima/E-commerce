@@ -2,10 +2,17 @@ import "./index.css";
 import Logo from "../../assets/logo.svg";
 import { Link } from "react-router";
 import { useAuth } from "../../context/auth/auth_helpers";
+import { useNavigate } from "react-router";
 
 function Header() {
 
   const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  }
 
   return (
     <header className="header">
@@ -13,8 +20,10 @@ function Header() {
 
       <div className="header-bottom">
         <div className="header-logo">
-          <img src={Logo} alt="Sporty’s" height="40" />
-          <h1>Sporty’s</h1>
+          <Link className="header-logo-link" to={"/"}>
+            <img src={Logo} alt="Sporty’s" height="40" />
+            <h1>Sporty’s</h1>
+          </Link>
           <nav className="header-categories">
             <Link to={"/"}>Roupas</Link>
             <Link to={"/"}>Calçados</Link>
@@ -24,13 +33,13 @@ function Header() {
         </div>
         <div className="header-user">
            {isAuthenticated ? (
-          <div>
-            <span>Bem-vindo, {user?.name}</span>
-            <button onClick={logout}>Sair</button>
+          <div className="header-user-authenticated">
+            <Link to={user.type==="admin" ? "/admin" : "/"}>Bem-vindo, {user?.name}</Link>
+            <button className="button-logout" onClick={handleLogout}>Sair</button>
           </div>
           ) : (
           <div>
-             <Link to={"/login"}>Entrar</Link>| <Link to={"/register"}>Registrar-se</Link>
+             <Link to={"/login"}>Entrar</Link> | <Link to={"/register"}>Registrar-se</Link>
           </div>
         )}
           
