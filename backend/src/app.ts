@@ -16,8 +16,8 @@ const corsOptions: CorsOptions = {
     }
   },
   methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // importante se você for usar cookies
+  allowedHeaders: ["Content-Type", "Authorization", "userid"],
+  credentials: true, 
 };
 
 

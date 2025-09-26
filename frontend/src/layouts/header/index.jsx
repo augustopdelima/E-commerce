@@ -34,7 +34,7 @@ function Header() {
         <div className="header-user">
            {isAuthenticated ? (
           <div className="header-user-authenticated">
-            <span>Bem-vindo, {user?.name}</span>
+            <Link to={user.type==="admin" ? "/admin" : "/"}>Bem-vindo, {user?.name}</Link>
             <button className="button-logout" onClick={handleLogout}>Sair</button>
           </div>
           ) : (

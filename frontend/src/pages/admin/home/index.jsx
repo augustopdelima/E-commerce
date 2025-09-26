@@ -1,5 +1,4 @@
-import AdminSidebar from "../../../components/admin-sidebar";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { productService } from "../../../services/products";
 import { ProductTable } from "../../../components/product-table";
 /**
@@ -24,10 +23,24 @@ export default function AdminHome() {
     fetchProducts();
   }, []);
 
+
+  const updateProducts = useCallback(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await productService.getAllProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error("Erro ao carregar produtos:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
     <main style={{backgroundColor: '#FFFFF',padding: '20px'}}>
       <h2>Produtos Cadastrados</h2>
-      <ProductTable products={products} />
+      <ProductTable products={products}  updateProducts={updateProducts} />
     </main>
   );
 }

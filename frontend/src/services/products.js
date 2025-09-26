@@ -36,7 +36,13 @@ export const productService = {
     const res = await api.put(`/product/${id}`, productData);
     return res.data;
   },
-  async deleteProduct(id) {
-    await api.delete(`/product/${id}`);
+  async deleteProduct(id, accessToken, userId) {
+    console.log("Deleting product with access token:", accessToken, userId);
+    await api.delete(`/product/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        userid: userId,
+      },
+    });
   },
 };
