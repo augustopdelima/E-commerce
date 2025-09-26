@@ -32,8 +32,25 @@ export const productService = {
 
     return res;
   },
-  async updateProduct(id, productData) {
-    const res = await api.put(`/product/${id}`, productData);
+  async updateProduct(id, productData, accessToken, userId) {
+    const formData = new FormData();
+
+    formData.append("name", productData.name);
+    formData.append("description", productData.description);
+    formData.append("price", productData.price);
+    formData.append("stock", productData.stock);
+
+    if (productData.imageFile) {
+      formData.append("image", productData.imageFile);
+    }
+
+    const res = await api.put(`/product/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
+        userid: userId,
+      },
+    });
     return res.data;
   },
   async deleteProduct(id, accessToken, userId) {

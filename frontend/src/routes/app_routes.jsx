@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router";
 import Login from "../pages/login";
 import Home from "../pages/home";
 import ProductDetails from "../pages/product-details";
-import { RegisterProducts, AdminRoute, AdminHome } from "../pages/admin";
+import { RegisterProducts, AdminRoute, AdminHome,  UpdateProduct } from "../pages/admin";
 import AdminLayout from "../layouts/admin";
 
 function AppRoutes() {
@@ -29,6 +29,7 @@ function AppRoutes() {
             </AdminRoute>
           }
         />
+        <Route path="edit-product/:id" element={<UpdateProduct />} />
       </Route>
     </Routes>
   );

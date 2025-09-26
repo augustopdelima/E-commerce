@@ -58,13 +58,17 @@ export function ProductController(productService: ProductServiceInterface) {
 
   async function updateProduct(req: Request, res: Response) {
     try {
+      const file = req.file;
+      const imageUrl = file
+        ? `${req.protocol}://${req.get("host")?.toString() ?? "localhost:3000"}/uploads/${file.filename}`
+        : "http://localhost:3000/uploads/placeholder.png";
       const { name, description, price, stock } = req.body as ProductDataBody;
       const product = await productService.getProductById(
         Number(req.params.id)
       );
       if (!product)
         return res.status(404).json({ error: "Produto não encontrado" });
-      await product.update({ name, description, price, stock });
+      await product.update({ name, description, price, stock, imageUrl });
       res.json(product);
     } catch (error) {
       console.log(error);

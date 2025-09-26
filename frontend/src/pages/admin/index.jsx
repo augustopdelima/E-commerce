@@ -1,5 +1,5 @@
 export { default as RegisterProducts } from "./register-products";
-
+export { default as UpdateProduct } from "./edit-products";
 export { default as AdminHome } from "./home";
 
 import { Navigate } from "react-router";
