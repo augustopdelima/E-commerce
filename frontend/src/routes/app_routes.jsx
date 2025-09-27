@@ -9,7 +9,12 @@ import {
   AdminHome,
   UpdateProduct,
 } from "../pages/admin";
-import { UserRoute, UserUpdate } from "../pages/user";
+import {
+  UserRoute,
+  UserUpdate,
+  UserAddress,
+  UserAddressRegister,
+} from "../pages/user";
 import AdminLayout from "../layouts/admin";
 import UserLayout from "../layouts/user";
 import CartPage from "../pages/cart";
@@ -36,6 +41,22 @@ function AppRoutes() {
           element={
             <UserRoute>
               <UserUpdate />
+            </UserRoute>
+          }
+        />
+        <Route
+          path="address"
+          element={
+            <UserRoute>
+              <UserAddress />
+            </UserRoute>
+          }
+        />
+        <Route
+          path="address/register"
+          element={
+            <UserRoute>
+              <UserAddressRegister />
             </UserRoute>
           }
         />

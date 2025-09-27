@@ -1,5 +1,7 @@
 import { useAuth } from "../../context/auth/auth_helpers";
 export { default as UserUpdate } from  "./update";
+export { default as UserAddressRegister } from "./address-register";
+export { default as UserAddress } from "./address-list";
 
 export function UserRoute({ children }) {
   const { user, loadingUser } = useAuth();
