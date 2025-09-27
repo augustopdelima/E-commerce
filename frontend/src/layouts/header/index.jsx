@@ -3,10 +3,12 @@ import Logo from "../../assets/logo.svg";
 import { Link } from "react-router";
 import { useAuth } from "../../context/auth/auth_helpers";
 import { useNavigate } from "react-router";
-
+import CartIcon from "../../components/cart-icon";
+import { useCart } from "../../context/cart/cart_hook";
 function Header() {
 
   const { user, isAuthenticated, logout } = useAuth();
+  const { totalItems } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -34,7 +36,8 @@ function Header() {
         <div className="header-user">
            {isAuthenticated ? (
           <div className="header-user-authenticated">
-            <Link to={user.type==="admin" ? "/admin" : "/"}>Bem-vindo, {user?.name}</Link>
+             {user.type === "client" && <CartIcon totalItems={totalItems} />}
+            <Link to={user.type==="admin" ? "/admin" : "/user"}>Bem-vindo, {user?.name}</Link>
             <button className="button-logout" onClick={handleLogout}>Sair</button>
           </div>
           ) : (

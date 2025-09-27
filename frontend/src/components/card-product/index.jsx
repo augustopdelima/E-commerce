@@ -1,6 +1,7 @@
 import "./index.css"; // CSS separado
 import { Link } from "react-router";
-
+import { useCart } from "../../context/cart/cart_hook";
+import { useAuth } from "../../context/auth/auth_helpers";
 /**
  * Componente para exibir um card de produto.
  *
@@ -17,6 +18,15 @@ import { Link } from "react-router";
  */
 
 const ProductCard = ({ product }) => {
+
+  const { user } = useAuth();
+  const { addToCart } = useCart();
+
+  function handleAddToCart() {
+    if(user.type !== "client") return;
+    addToCart({...product, quantity: 1 });
+  }
+
   return (
     <div className="product-card">
       <h3 className="product-name">{product.name}</h3>
@@ -31,7 +41,7 @@ const ProductCard = ({ product }) => {
       <Link to={"/products/" + product.id} className="product-link">
         Ver detalhes
       </Link>
-      <button className="btn-add-cart" disabled={product.stock === 0}>
+      <button className="btn-add-cart" onClick={handleAddToCart} disabled={product.stock === 0}>
         {product.stock > 0 ? "Adicionar ao carrinho" : "Indisponível"}
       </button>
     </div>

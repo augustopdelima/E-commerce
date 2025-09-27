@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { UserController } from "../controllers/user_controller";
 import { UserService } from "../services/user_service";
-import { isAdmin } from "../middlewares/isAdmin";
 import { authMiddleware } from "../middlewares/auth";
 const router = Router();
 
@@ -14,7 +13,7 @@ const userService = UserService();
 const userController = UserController(userService, SECRET,  REFRESH_SECRET);
 
 router.post("/register", userController.register);
-router.get("/:id", isAdmin, userController.user);
+router.get("/:id", authMiddleware, userController.user);
 router.post("/login", userController.login);
 router.post("/refresh",  userController.refresh);
 router.put("/:id", authMiddleware, userController.update)
