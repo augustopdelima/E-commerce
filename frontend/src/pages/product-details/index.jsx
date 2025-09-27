@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { productService } from "../../services/products";
 import { useParams } from "react-router";
+import { useCart } from "../../context/cart/cart_hook";
 import "./index.css";
 
 export default function ProductDetails() {
   const { id } = useParams();
+  const { addToCart } = useCart();
+
 
   const [product, setProduct] = useState(null);
   const [error, setError] = useState(null);
@@ -28,6 +31,10 @@ export default function ProductDetails() {
 
     fetchProductDetails();
   }, [id]);
+
+  function addToCartHandler() {
+    addToCart({ ...product, quantity: 1 });
+  }
 
   if (loading)
     return <p className="loading">Carregando detalhes do produto...</p>;
@@ -57,7 +64,9 @@ export default function ProductDetails() {
       <div className="purchase-box">
         <p className="price-box">R$ {product.price.toFixed(2)}</p>
         <p className="stock-box">{product.stock > 0 ? "Pronto para envio" : "Indisponível"}</p>
-        <button className="buy-btn" disabled={product.stock === 0}>
+
+        <button className="buy-btn" onClick={addToCartHandler} disabled={product.stock === 0}>
+
           {product.stock > 0 ? "Adicionar ao carrinho" : "Esgotado"}
         </button>
       </div>

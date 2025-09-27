@@ -1,4 +1,4 @@
-import { Request, RequestHandler, Response } from "express";
+import { Request, Response } from "express";
 import { UserServiceInterface } from "../services/user_service";
 import bcrypt from "bcrypt";
 import { AuthRequest } from "../middlewares/auth";
@@ -73,11 +73,12 @@ export function UserController(
         message: "Usuário cadastrado com sucesso",
         user: {
           id: user.id,
+          name: user.name,
           email: user.email,
           type: user.type,
         },
         accessToken: tokens.accessToken,
-        refreshToke: tokens.refreshToken,
+        refreshToken: tokens.refreshToken,
       });
     } catch (err: unknown) {
       console.log(err);
@@ -85,9 +86,22 @@ export function UserController(
     }
   }
 
-  const user: RequestHandler<{ id: string }> = async (req, res) => {
+  async function user (req:AuthRequest, res:Response) {
     try {
       const { id } = req.params;
+      
+      const userId = Number(req.user?.id); // vem do authMiddleware
+      const userType = req.user?.type;
+
+      const existingUser = await userService.findUserById(Number(id));
+      if (!existingUser) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
+      }
+
+      if (userId !== Number(id) && userType !== "admin") {
+        return res.status(403).json({ error: "Acesso negado" });
+      }
+      
       const user = await userService.getUser(id);
 
       return res.status(200).json({

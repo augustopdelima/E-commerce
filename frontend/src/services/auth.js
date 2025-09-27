@@ -4,6 +4,10 @@ export const authService = {
   async login(email, password) {
     const res = await api.post("/user/login", { email, password });
     return res;
+  },
+  async register(name, email, password) {
+    const res = await api.post("/user/register", { name, email, password });
+    return res;
   }, 
   async refreshToken() {
     try {

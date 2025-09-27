@@ -10,7 +10,9 @@ import { createContext, useContext } from "react";
  *  isAuthenticated: boolean,
  *  login: (email: string, password: string) => Promise<Object>,
  *  logout: () => Promise<void>,
- *  refresh: () => Promise<void>
+ *  refresh: () => Promise<void>,
+ *  register: (name: string, email: string, password: string) => Promise<Object>,
+ *  loadingUser: boolean
  * }|null>}
  */
 export const AuthContext = createContext(null);
@@ -25,7 +27,9 @@ export const AuthContext = createContext(null);
  *  isAuthenticated: boolean,
  *  login: (email: string, password: string) => Promise<Object>,
  *  logout: () => Promise<void>,
- *  refresh: () => Promise<void>
+ *  refresh: () => Promise<void>,
+ *  register: (name: string, email: string, password: string) => Promise<Object>,
+ *  loadingUser: boolean,
  * }} Retorna o contexto de autenticação ou `null` se não estiver dentro de um `AuthProvider`.
  */
 export const useAuth = () => {

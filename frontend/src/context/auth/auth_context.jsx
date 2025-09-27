@@ -50,7 +50,31 @@ export const AuthProvider = ({ children }) => {
     setLoadingUser(false);
   }, []);
 
-  
+  /**
+   * 
+   * Realiza o registro do usuário e armazena os tokens.
+   * @async
+   * @param {string} name 
+   * @param {string} email 
+   * @param {string} password 
+   * @returns {Promise<Object>} Resposta do serviço de autenticação com `accessToken`, `user` e `refreshToken`.
+   */
+
+  const register = async (name, email, password) => {
+    const res = await authService.register(name, email, password);
+    if (res?.data.accessToken && res?.data.user) {
+      setAccessToken(res.data.accessToken);
+      setUser(res.data.user);
+      setRefreshToken(res.data.refreshToken);
+      localStorage.setItem("accessToken", res.data.accessToken);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      localStorage.setItem("refreshToken", res.data.refreshToken);
+
+      setUser(res.data.user);
+    }
+
+    return res;
+  }
 
   /**
    * Realiza o login do usuário e armazena os tokens.
@@ -121,7 +145,8 @@ export const AuthProvider = ({ children }) => {
         logout,
         refresh,
         isAuthenticated,
-        loadingUser
+        loadingUser,
+        register
       }}
     >
       {children}
