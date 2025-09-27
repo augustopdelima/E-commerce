@@ -62,7 +62,15 @@ function AppRoutes() {
         />
       </Route>
 
-      <Route path="/cart" element={<CartPage />} />
+      <Route
+        path="/cart"
+        element={
+          <UserRoute>
+            <CartPage />
+          </UserRoute>
+        }
+      />
+      
       <Route path="/admin" element={<AdminLayout />}>
         <Route
           index
