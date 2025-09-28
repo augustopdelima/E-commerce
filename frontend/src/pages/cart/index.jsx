@@ -3,6 +3,7 @@ import { useAuth } from "../../context/auth/auth_helpers";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { addressService } from "../../services/addresses";
+import { orderService } from "../../services/orders";
 import "./index.css";
 
 /**
@@ -20,11 +21,12 @@ export default function CartPage() {
     totalItems,
   } = useCart();
 
-  const { user } = useAuth();
+  const { user, accessToken } = useAuth();
 
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -43,6 +45,31 @@ export default function CartPage() {
 
     fetchAddresses();
   }, [user]);
+
+  const handleCheckout = async () => {
+    try {
+      setLoading(true);
+      setMessage("");
+
+      const userId = user.id;
+      const token = accessToken;
+
+      const items = cartItems.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+      }));
+
+      const order = await orderService.createOrder(userId, items, token);
+
+      setMessage(`Pedido #${order.id} criado com sucesso!`);
+      clearCart();
+    } catch (err) {
+      console.error(err);
+      setMessage("Erro ao finalizar pedido.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="cart-container">
@@ -93,8 +120,12 @@ export default function CartPage() {
               Subtotal ({totalItems} itens):{" "}
               <strong>R$ {totalPrice.toFixed(2)}</strong>
             </p>
-            <button className="checkout-btn" disabled={!selectedAddress}>
-              Finalizar compra
+            <button
+              className="checkout-btn"
+              onClick={handleCheckout}
+              disabled={!selectedAddress}
+            >
+              {loading ? "Processando..." : "Finalizar compra"}
             </button>
             <button className="clear-btn" onClick={clearCart}>
               Esvaziar carrinho
@@ -123,8 +154,6 @@ export default function CartPage() {
                 </select>
               </div>
             )}
-
-
           </aside>
         </div>
       )}
