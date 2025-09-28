@@ -8,8 +8,15 @@ import {
   AdminRoute,
   AdminHome,
   UpdateProduct,
+  OrdersPage,
 } from "../pages/admin";
-import { UserRoute, UserUpdate } from "../pages/user";
+import {
+  UserRoute,
+  UserUpdate,
+  UserAddress,
+  UserAddressRegister,
+  UserOrders,
+} from "../pages/user";
 import AdminLayout from "../layouts/admin";
 import UserLayout from "../layouts/user";
 import CartPage from "../pages/cart";
@@ -27,7 +34,7 @@ function AppRoutes() {
           index
           element={
             <UserRoute>
-              <>Nada aqui</>
+              <UserOrders />
             </UserRoute>
           }
         />
@@ -39,9 +46,33 @@ function AppRoutes() {
             </UserRoute>
           }
         />
+        <Route
+          path="address"
+          element={
+            <UserRoute>
+              <UserAddress />
+            </UserRoute>
+          }
+        />
+        <Route
+          path="address/register"
+          element={
+            <UserRoute>
+              <UserAddressRegister />
+            </UserRoute>
+          }
+        />
       </Route>
 
-      <Route path="/cart" element={<CartPage />} />
+      <Route
+        path="/cart"
+        element={
+          <UserRoute>
+            <CartPage />
+          </UserRoute>
+        }
+      />
+
       <Route path="/admin" element={<AdminLayout />}>
         <Route
           index
@@ -56,6 +87,14 @@ function AppRoutes() {
           element={
             <AdminRoute>
               <RegisterProducts />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="orders"
+          element={
+            <AdminRoute>
+              <OrdersPage />
             </AdminRoute>
           }
         />

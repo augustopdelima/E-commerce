@@ -1,6 +1,7 @@
 export { default as RegisterProducts } from "./register-products";
 export { default as UpdateProduct } from "./edit-products";
 export { default as AdminHome } from "./home";
+export { default as OrdersPage } from "./orders-page";
 
 import { Navigate } from "react-router";
 import { useAuth } from "../../context/auth/auth_helpers";

@@ -21,6 +21,9 @@ export default function UserSidebar() {
         >
           Alterar Dados
         </NavLink>
+        <NavLink to="/user/address" className={({isActive}) =>  isActive ? "sidebar-link active" : "sidebar-link"} >
+           Cadastrar endereço
+         </NavLink>
       </nav>
     </aside>
   );
