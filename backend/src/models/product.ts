@@ -8,6 +8,7 @@ export class Product extends Model {
   declare description: string;
   declare price: number;
   declare stock: number;
+  declare imageUrl?: string;
 }
 
 Product.init(
@@ -33,6 +34,10 @@ Product.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
+    },
+    imageUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {

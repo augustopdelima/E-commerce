@@ -1,0 +1,38 @@
+.orders-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.orders-list {
+  list-style: none;
+  padding: 0;
+}
+
+.order-item {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.order-item h3 {
+  margin: 0 0 0.5rem 0;
+}
+
+.order-items {
+  list-style: none;
+  margin: 0.5rem 0 0 0;
+  padding: 0;
+}
+
+.order-product {
+  padding: 0.3rem 0;
+  border-bottom: 1px dashed #ddd;
+  font-size: 0.95rem;
+}
+
+.order-product:last-child {
+  border-bottom: none;
+}

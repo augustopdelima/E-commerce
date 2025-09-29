@@ -1,4 +1,4 @@
-import { Request, RequestHandler, Response } from "express";
+import { Request, Response } from "express";
 import { UserServiceInterface } from "../services/user_service";
 import bcrypt from "bcrypt";
 import { AuthRequest } from "../middlewares/auth";
@@ -30,6 +30,8 @@ export function UserController(
   SECRET: string,
   REFRESH_SECRET: string
 ) {
+  
+
   function generateTokens(user: { id: string; type: string }) {
     const accessToken = jwt.sign(
       { id: user.id, type: user.type },
@@ -65,14 +67,18 @@ export function UserController(
         type: user.type,
       });
 
+      
+
       return res.status(201).json({
         message: "Usuário cadastrado com sucesso",
         user: {
           id: user.id,
+          name: user.name,
           email: user.email,
           type: user.type,
         },
-        ...tokens,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
       });
     } catch (err: unknown) {
       console.log(err);
@@ -80,9 +86,22 @@ export function UserController(
     }
   }
 
-  const user: RequestHandler<{ id: string }> = async (req, res) => {
+  async function user (req:AuthRequest, res:Response) {
     try {
       const { id } = req.params;
+      
+      const userId = Number(req.user?.id); // vem do authMiddleware
+      const userType = req.user?.type;
+
+      const existingUser = await userService.findUserById(Number(id));
+      if (!existingUser) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
+      }
+
+      if (userId !== Number(id) && userType !== "admin") {
+        return res.status(403).json({ error: "Acesso negado" });
+      }
+      
       const user = await userService.getUser(id);
 
       return res.status(200).json({
@@ -97,6 +116,7 @@ export function UserController(
       return res.status(400).json({ erro: "Algo deu errado" });
     }
   };
+
 
   async function login(req: Request, res: Response) {
     try {
@@ -117,6 +137,8 @@ export function UserController(
         type: user.type,
       });
 
+     
+
       return res.json({
         message: "Login realizado com sucesso!",
         user: {
@@ -125,7 +147,8 @@ export function UserController(
           name: user.name,
           type: user.type,
         },
-        ...tokens,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
       });
     } catch (err: unknown) {
       console.log(err);
@@ -134,10 +157,14 @@ export function UserController(
   }
 
   function refresh(req: Request, res: Response) {
+    
     const { refreshToken } = req.body as RefreshTokenBody;
+    
+    
     if (!refreshToken) {
       return res.status(401).json({ error: "Refresh token não fornecido" });
     }
+
     try {
       const decoded = jwt.verify(refreshToken, REFRESH_SECRET) as TokenPayload;
 
@@ -146,8 +173,10 @@ export function UserController(
         SECRET,
         {
           expiresIn: "1h",
+          jwtid:crypto.randomUUID(),
         }
       );
+
       const newRefreshToken = jwt.sign(
         { id: decoded.id, type: decoded.type },
         REFRESH_SECRET,
@@ -157,7 +186,7 @@ export function UserController(
         }
       );
 
-      return res.json({ accessToken, refreshToken: newRefreshToken });
+      return res.status(200).json({ accessToken, refreshToken: newRefreshToken});
     } catch (err: unknown) {
       console.log(err);
       return res
@@ -172,16 +201,15 @@ export function UserController(
       const userId = Number(req.user?.id); // vem do authMiddleware
       const userType = req.user?.type;
 
-
       const existingUser = await userService.findUserById(Number(id));
       if (!existingUser) {
         return res.status(404).json({ error: "Usuário não encontrado" });
       }
-    
+
       if (userId !== Number(id) && userType !== "admin") {
         return res.status(403).json({ error: "Acesso negado" });
       }
-      
+
       const { name, password, email } = req.body as UserRegisterBody;
 
       const updatedUser = await userService.updateUser(Number(id), {
