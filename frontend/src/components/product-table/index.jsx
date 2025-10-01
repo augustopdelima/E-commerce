@@ -17,7 +17,6 @@ import { useAuth } from "../../context/auth/auth_helpers";
  * @returns {JSX.Element} Tabela de produtos.
  */
 export function ProductTable({ products, updateProducts }) {
-
   const { accessToken, user } = useAuth();
 
   function handleDelete(productId) {
@@ -50,24 +49,26 @@ export function ProductTable({ products, updateProducts }) {
       <tbody>
         {products.map((product) => (
           <tr key={product.id}>
-            <th>{product.id}</th>
+            <td>{product.id}</td>
             <td>{product.name}</td>
             <td>{product.description}</td>
             <td>R$ {product.price.toFixed(2)}</td>
             <td>{product.stock}</td>
-            <td className="actions-cell">
-              <Link
-                to={`/admin/edit-product/${product.id}`}
-                className="btn-edit"
-              >
-                Editar
-              </Link>
-              <button
-                className="btn-delete"
-                onClick={() => handleDelete(product.id)}
-              >
-                Excluir
-              </button>
+            <td>
+              <div className="actions-cell">
+                <Link
+                  to={`/admin/edit-product/${product.id}`}
+                  className="btn-edit"
+                >
+                  Editar
+                </Link>
+                <button
+                  className="btn-delete"
+                  onClick={() => handleDelete(product.id)}
+                >
+                  Excluir
+                </button>
+              </div>
             </td>
           </tr>
         ))}

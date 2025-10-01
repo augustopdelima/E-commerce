@@ -55,14 +55,55 @@ function initDataProducts() {
       );
 
       const products = [
-        ["Camiseta", "100% algodão", 59.9, 20, "http://localhost:3000/uploads/placeholder.png"],
-        ["Tênis", "Esportivo confortável", 199.9, 15, "http://localhost:3000/uploads/placeholder.png"],
-        ["Mochila", "Resistente e prática", 129.9, 10, "http://localhost:3000/uploads/placeholder.png"],
-        ["Boné", "Boné estilo snapback", 49.9, 30, "http://localhost:3000/uploads/placeholder.png"],
-        ["Jaqueta", "Jaqueta impermeável", 249.9, 5, "http://localhost:3000/uploads/placeholder.png"],
-        ["Calça Jeans", "Jeans slim fit", 99.9, 25, "http://localhost:3000/uploads/placeholder.png"],
-        ["Meias", "Pacote com 5 pares", 29.9, 50, "http://localhost:3000/uploads/placeholder.png"],
-        ["Óculos de sol", "UV400 proteção", 79.9, 12, "http://localhost:3000/uploads/placeholder.png"],
+        [
+          "Camiseta",
+          "Camiseta esportiva confeccionada em 100% algodão, tecido leve e respirável que proporciona conforto durante o dia todo. Ideal para treinos, caminhadas ou uso casual.",
+          59.9,
+          20,
+          "http://localhost:3000/uploads/camiseta-esportiva.png",
+        ],
+        [
+          "Tênis",
+          "Tênis esportivo confortável com solado emborrachado antiderrapante e cabedal respirável. Perfeito para corridas leves, academia e atividades do dia a dia.",
+          199.9,
+          15,
+          "http://localhost:3000/uploads/tenis-esportivo.webp",
+        ],
+        [
+          "Mochila",
+          "Mochila resistente e prática, com compartimento principal espaçoso, bolsos laterais para garrafas e alças acolchoadas que garantem conforto no transporte.",
+          129.9,
+          10,
+          "http://localhost:3000/uploads/mochila-esportiva.avif",
+        ],
+        [
+          "Meias",
+          "Pacote com 5 pares de meias esportivas de algodão com elastano, ajustam bem ao pé e oferecem conforto e respirabilidade durante treinos ou uso diário.",
+          29.9,
+          50,
+          "http://localhost:3000/uploads/meias-esportivas.webp",
+        ],
+        [
+          "Garrafa Térmica",
+          "Garrafa térmica de 750ml em aço inoxidável com isolamento a vácuo, mantendo a bebida gelada por até 12h ou quente por até 6h. Ideal para academia ou escritório.",
+          89.9,
+          30,
+          "http://localhost:3000/uploads/garrafa-termica-esportiva.jpg",
+        ],
+        [
+          "Jaqueta Corta-Vento",
+          "Jaqueta leve corta-vento com capuz ajustável e tecido impermeável, ideal para corridas ao ar livre e dias chuvosos. Fácil de dobrar e transportar.",
+          159.9,
+          12,
+          "http://localhost:3000/uploads/jaqueta-corta-vento.avif",
+        ],
+        [
+          "Relógio Fitness",
+          "Relógio inteligente com monitor de frequência cardíaca, contagem de passos, rastreamento de sono e notificações de celular. Bateria com duração de até 7 dias.",
+          249.9,
+          8,
+          "http://localhost:3000/uploads/relogio-fitness.jpg",
+        ],
       ];
 
       products.forEach((p) => {
