@@ -1,5 +1,5 @@
 import express from "express";
-import { userRoutes, productRoutes, addressRoutes, orderRoutes } from "./routes";
+import { userRoutes, productRoutes, addressRoutes, orderRoutes, checkoutRoutes } from "./routes";
 import adminProductRoutes from "./routes/admin_product_routes";
 import cors, { CorsOptions } from "cors";
 import path from "path";
@@ -26,6 +26,7 @@ app.use(cors(corsOptions));
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/user", userRoutes);
 app.use("/product", productRoutes);
+app.use(checkoutRoutes);
 app.use("/address", addressRoutes);
 app.use("/order", orderRoutes);
 app.use(adminProductRoutes);
