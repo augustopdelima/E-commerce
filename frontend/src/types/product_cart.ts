@@ -2,7 +2,7 @@ export interface ProductCart {
   id: number;
   name: string;
   price: number;
-  image: string;
+  imageUrl: string;
   stock: number;
   quantity?: number; 
 }

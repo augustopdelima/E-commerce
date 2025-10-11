@@ -1,6 +1,6 @@
 import { api } from "./api";
 
-export interface Product {
+export interface ProductForm {
     name:string;
     description:string;
     price:string;
@@ -8,9 +8,18 @@ export interface Product {
     image: File;
 }
 
+export interface ProductResponse {
+    id:number;
+    price:number;
+    name:string;
+    stock:number;
+    description:string;
+    imageUrl:string;
+}
+
 export const productService = {
     async getAllProducts()  {
-        const res = await api.get("/product");
+        const res = await api.get<ProductResponse[]>("/product");
         return res.data;
     },
 
@@ -19,7 +28,7 @@ export const productService = {
         return res.data;
     },
 
-    async createProduct(productData:Product) {
+    async createProduct(productData:ProductForm) {
         const formData =  new FormData();
 
         formData.append("name", productData.name);
@@ -38,7 +47,7 @@ export const productService = {
         return res;
     },
 
-    async updateProduct(id:string, productData:Product, accessToken:string, userId:string) {
+    async updateProduct(id:string, productData:ProductForm, accessToken:string, userId:string) {
         const formData = new FormData();
 
         formData.append("name", productData.name);
