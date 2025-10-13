@@ -1,12 +1,15 @@
 import {Routes, Route} from  "react-router";
+import { Home } from "../pages/home";
+import { Login, Register } from "../pages/auth";
+import { ProductDetails } from "../pages/product-details";
 
 export const AppRoutes = () =>  {
     return (
         <Routes>
-            <Route path="/" />
-            <Route path="/login" />
-            <Route path="/register" />
-            <Route path="/products/:id"  />
+            <Route path="/" element={<Home />} />
+            <Route path="/login"  element={<Login />} />
+            <Route path="/register" element={<Register />}/>
+            <Route path="/products/:id" element={<ProductDetails />} />
 
             <Route path="/user">
                 <Route index />

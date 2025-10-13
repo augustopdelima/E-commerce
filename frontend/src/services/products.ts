@@ -24,7 +24,7 @@ export const productService = {
     },
 
     async getProductById(id:string){
-        const res = await api.get(`/product/${id}`);
+        const res = await api.get<ProductResponse>(`/product/${id}`);
         return res.data;
     },
 
