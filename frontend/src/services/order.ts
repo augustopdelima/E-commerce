@@ -1,5 +1,7 @@
 import { api } from "./api";
 
+import type { Order } from "../types";
+
 export const orderService = {
     async createOrder(userId:string, items:[],  token:string)  {
         const res = await api.post(
@@ -16,7 +18,7 @@ export const orderService = {
     },
 
     async getOrdersByUser(userId:string) {
-        const res = await api.get(`/order/${userId}`);
+        const res = await api.get<Order[]>(`/order/${userId}`);
         return res.data;
     },
 

@@ -1,11 +1,11 @@
 import { type FC } from "react";
 
-type ProductErrorFallbackProps = {
+type ProductsErrorFallbackProps = {
   resetErrorBoundary: () => void;
 };
 
 
-export const ProductErrorFallback:FC<ProductErrorFallbackProps> = ({ resetErrorBoundary }) => {
+export const ProductsErrorFallback:FC<ProductsErrorFallbackProps> = ({ resetErrorBoundary }) => {
 
     function handleTryAgain() {
         resetErrorBoundary();

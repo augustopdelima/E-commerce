@@ -1,0 +1,12 @@
+interface OrderProduct {
+  productId: string;
+  quantity: string;
+  price: string;
+}
+
+export interface Order {
+  id: string;
+  status: string;
+  total: string;
+  items: OrderProduct[];
+}

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { ProductsGrid } from "../../components/products-grid";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { useQueryErrorResetBoundary } from "@tanstack/react-query";
-import { ProductErrorFallback } from "./product-error-fallback";
+import { ProductsErrorFallback } from "./products-error-fallback";
 
 export const Home = () => {
   const { reset } = useQueryErrorResetBoundary();
@@ -10,7 +10,7 @@ export const Home = () => {
   return (
     <ErrorBoundary
       fallback={({ resetErrorBoundary }) => (
-        <ProductErrorFallback resetErrorBoundary={resetErrorBoundary} />
+        <ProductsErrorFallback resetErrorBoundary={resetErrorBoundary} />
       )}
       onReset={reset}
     >
