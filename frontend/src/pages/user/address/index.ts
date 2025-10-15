@@ -1,0 +1,1 @@
+export { AddressesListPage } from "./address-list";

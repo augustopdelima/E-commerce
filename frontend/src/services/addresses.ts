@@ -6,13 +6,14 @@ interface Address {
     city: string;
     state:string;
     zipcode: string;
+    id:number;
 }
 
 
 export const addressService = {
 
     async getAll(userId:string)  {
-        const res = await api.get(`/address/users/${userId}addresses`);
+        const res = await api.get<Address[]>(`/address/users/${userId}/addresses`);
         return res.data;
     },
 

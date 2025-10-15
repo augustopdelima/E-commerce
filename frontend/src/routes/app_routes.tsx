@@ -2,8 +2,10 @@ import { Routes, Route } from "react-router";
 import { Home } from "../pages/home";
 import { Login, Register } from "../pages/auth";
 import { ProductDetails } from "../pages/product-details";
-import { UserRoute } from "./user/user-route";
+import { UserRoute } from "./user";
 import { OrdersPage } from "../pages/user/orders";
+import { UserUpdate  } from "../pages/user/update";
+import { AddressesListPage } from "../pages/user/address";
 
 export const AppRoutes = () => {
   return (
@@ -22,8 +24,16 @@ export const AppRoutes = () => {
             </UserRoute>
           }
         />
-        <Route path="update" />
-        <Route path="address" />
+        <Route path="update" element={
+          <UserRoute>
+            <UserUpdate />
+          </UserRoute>
+        } />
+        <Route path="address" element={
+          <UserRoute>
+            <AddressesListPage />
+          </UserRoute>
+        } />
         <Route path="address/register" />
         <Route path="/cart" />
       </Route>
