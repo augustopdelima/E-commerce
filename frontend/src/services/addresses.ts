@@ -1,19 +1,11 @@
 import { api } from "./api";
-
-interface Address {
-    street:string;
-    number:number;
-    city: string;
-    state:string;
-    zipcode: string;
-    id:number;
-}
+import type  { AddressResponse, Address } from "../types";
 
 
 export const addressService = {
 
     async getAll(userId:string)  {
-        const res = await api.get<Address[]>(`/address/users/${userId}/addresses`);
+        const res = await api.get<AddressResponse[]>(`/address/users/${userId}/addresses`);
         return res.data;
     },
 

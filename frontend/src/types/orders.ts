@@ -10,3 +10,8 @@ export interface Order {
   total: string;
   items: OrderProduct[];
 }
+
+export interface ItemsOrder  {
+  productId: number;
+  quantity: number;
+}

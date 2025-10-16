@@ -4,5 +4,5 @@ export interface ProductCart {
   price: number;
   imageUrl: string;
   stock: number;
-  quantity?: number; 
+  quantity: number; 
 }

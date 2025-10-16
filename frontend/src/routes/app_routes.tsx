@@ -5,7 +5,7 @@ import { ProductDetails } from "../pages/product-details";
 import { UserRoute } from "./user";
 import { OrdersPage } from "../pages/user/orders";
 import { UserUpdate  } from "../pages/user/update";
-import { AddressesListPage } from "../pages/user/address";
+import { AddressesListPage, RegisterAddress } from "../pages/user/address";
 
 export const AppRoutes = () => {
   return (
@@ -34,8 +34,16 @@ export const AppRoutes = () => {
             <AddressesListPage />
           </UserRoute>
         } />
-        <Route path="address/register" />
-        <Route path="/cart" />
+        <Route path="address/register" element={
+          <UserRoute>
+            <RegisterAddress />
+          </UserRoute>
+        }/>
+        <Route path="/cart" element={
+          <UserRoute>
+            <div>Carrinho de Compras</div>
+          </UserRoute>
+        }/>
       </Route>
 
       <Route path="/admin">

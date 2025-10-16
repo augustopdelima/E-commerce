@@ -1,9 +1,9 @@
 import { api } from "./api";
 
-import type { Order } from "../types";
+import type { Order, ItemsOrder  } from "../types";
 
 export const orderService = {
-    async createOrder(userId:string, items:[],  token:string)  {
+    async createOrder(userId:string, items:ItemsOrder[],  token:string)  {
         const res = await api.post(
             "/order",
             { userId, items },

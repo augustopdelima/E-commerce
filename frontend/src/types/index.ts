@@ -6,4 +6,5 @@ export type {
   RegisterResponse,
   SetupInterceptorsParams,
 } from "./auth";
-export type { Order } from "./orders";
+export type { Order, ItemsOrder } from "./orders";
+export type { Address, AddressResponse } from "./address";
