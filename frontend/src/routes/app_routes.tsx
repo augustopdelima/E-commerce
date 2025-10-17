@@ -3,9 +3,12 @@ import { Home } from "../pages/home";
 import { Login, Register } from "../pages/auth";
 import { ProductDetails } from "../pages/product-details";
 import { UserRoute } from "./user";
+import { AdminRoute } from "./admin";
 import { OrdersPage } from "../pages/user/orders";
-import { UserUpdate  } from "../pages/user/update";
+import { UserUpdate } from "../pages/user/update";
 import { AddressesListPage, RegisterAddress } from "../pages/user/address";
+import { CartPage } from "../pages/user/cart";
+import { AdminHomePage } from "../pages/admin/";
 
 export const AppRoutes = () => {
   return (
@@ -24,33 +27,73 @@ export const AppRoutes = () => {
             </UserRoute>
           }
         />
-        <Route path="update" element={
-          <UserRoute>
-            <UserUpdate />
-          </UserRoute>
-        } />
-        <Route path="address" element={
-          <UserRoute>
-            <AddressesListPage />
-          </UserRoute>
-        } />
-        <Route path="address/register" element={
-          <UserRoute>
-            <RegisterAddress />
-          </UserRoute>
-        }/>
-        <Route path="/cart" element={
-          <UserRoute>
-            <div>Carrinho de Compras</div>
-          </UserRoute>
-        }/>
+        <Route
+          path="update"
+          element={
+            <UserRoute>
+              <UserUpdate />
+            </UserRoute>
+          }
+        />
+        <Route
+          path="address"
+          element={
+            <UserRoute>
+              <AddressesListPage />
+            </UserRoute>
+          }
+        />
+        <Route
+          path="address/register"
+          element={
+            <UserRoute>
+              <RegisterAddress />
+            </UserRoute>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <UserRoute>
+              <CartPage />
+            </UserRoute>
+          }
+        />
       </Route>
 
       <Route path="/admin">
-        <Route index />
-        <Route path="register-products" />
-        <Route path="orders" />
-        <Route path="edit-product/:id" />
+        <Route
+          index
+          element={
+            <AdminRoute>
+              <AdminHomePage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="register-products"
+          element={
+            <AdminRoute>
+              <div>Cadastrar Produtos</div>
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="orders"
+          element={
+            <AdminRoute>
+              <div>Gerenciar Pedidos</div>
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="edit-product/:id"
+          element={
+            <AdminRoute>
+              <div>Editar Produto</div>
+            </AdminRoute>
+          }
+        />
       </Route>
     </Routes>
   );
