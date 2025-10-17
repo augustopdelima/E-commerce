@@ -8,3 +8,4 @@ export type {
 } from "./auth";
 export type { Order, ItemsOrder } from "./orders";
 export type { Address, AddressResponse } from "./address";
+export type { ProductForm, ProductResponse } from "./products";

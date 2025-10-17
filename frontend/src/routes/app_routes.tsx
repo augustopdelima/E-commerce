@@ -8,7 +8,7 @@ import { OrdersPage } from "../pages/user/orders";
 import { UserUpdate } from "../pages/user/update";
 import { AddressesListPage, RegisterAddress } from "../pages/user/address";
 import { CartPage } from "../pages/user/cart";
-import { AdminHomePage } from "../pages/admin/";
+import { AdminHomePage, RegisterProducts } from "../pages/admin/";
 
 export const AppRoutes = () => {
   return (
@@ -74,7 +74,7 @@ export const AppRoutes = () => {
           path="register-products"
           element={
             <AdminRoute>
-              <div>Cadastrar Produtos</div>
+              <RegisterProducts />
             </AdminRoute>
           }
         />
