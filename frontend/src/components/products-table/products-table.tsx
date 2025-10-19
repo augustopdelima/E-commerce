@@ -56,7 +56,7 @@ export const ProductsTable:FC<ProductsTableProps> = ({ userId, accessToken }) =>
             <td>{product.stock}</td>
             <td>
               <div>
-                <Link to={`/admin/products/edit/${product.id}`}>Editar</Link>
+                <Link to={`/admin/edit-product/${product.id}`}>Editar</Link>
                 <button onClick={() => handleDeleteProduct(product.id)}>Excluir</button>
               </div>
             </td>

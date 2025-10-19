@@ -8,7 +8,7 @@ interface CartIconProps {
 
 export const CartIcon: FC<CartIconProps> = ({ totalItems }) => {
   return (
-    <Link to="/cart">
+    <Link to="/user/cart">
       <img src={Cart} alt="Cart" height="24" />
       {totalItems > 0 && <span>{totalItems}</span>}
     </Link>

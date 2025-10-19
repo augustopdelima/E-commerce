@@ -52,7 +52,7 @@ export const AppRoutes = () => {
           }
         />
         <Route
-          path="/cart"
+          path="cart"
           element={
             <UserRoute>
               <CartPage />
