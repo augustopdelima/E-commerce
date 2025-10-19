@@ -23,7 +23,7 @@ export const orderService = {
     },
 
     async getOrders(token:string) {
-        const res = await api.get("/order", {
+        const res = await api.get<Order[]>("/order", {
             headers:{
                 Authorization:`Bearer ${token}`,
             }

@@ -8,6 +8,10 @@ export interface Order {
   id: string;
   status: string;
   total: string;
+  user:{
+    name: string;
+    email: string;
+  }
   items: OrderProduct[];
 }
 
