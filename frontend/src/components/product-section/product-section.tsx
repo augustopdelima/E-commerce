@@ -31,16 +31,34 @@ export const ProductSection: FC<ProductSectionProps> = ({ id }) => {
   const sendText = hasStock ? "Pronto para envio" : "Indisponível";
 
   return (
-    <section>
-      <Thumb {...data} />
-      <Info  hasStockText={hasStockText} {...data} />
-      <Actions
-        hasStock={hasStock}
-        price={data.price}
-        addToCartHandler={addToCartHandler}
-        sendText={sendText}
-        addToCartText={addToCartText}
-      />
+    <section
+      className="container mx-auto p-4 md:p-8  
+               grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12"
+    >
+      <div className="md:order-1">
+        <Thumb {...data} />
+      </div>
+
+      <div className="md:order-2 space-y-8">
+       
+        <div className="bg-white p-6 rounded-lg shadow-md border-b border-gray-200">
+          <Info hasStockText={hasStockText} {...data} />
+        </div>
+
+      
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-xl font-bold mb-4 text-gray-800">
+            Opções de Compra
+          </h3>
+          <Actions
+            hasStock={hasStock}
+            price={data.price}
+            addToCartHandler={addToCartHandler}
+            sendText={sendText}
+            addToCartText={addToCartText}
+          />
+        </div>
+      </div>
     </section>
   );
 };
