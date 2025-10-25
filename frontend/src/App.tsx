@@ -8,7 +8,7 @@ function App() {
     <CartProvider>
       <Router>
         <Header />
-        <main>
+        <main className="flex flex-col items-center justify-center w-full h-full">
           <AppRoutes />
         </main>
       </Router>

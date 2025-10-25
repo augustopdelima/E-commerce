@@ -9,6 +9,8 @@ import { UserUpdate } from "../pages/user/update";
 import { AddressesListPage, RegisterAddress } from "../pages/user/address";
 import { CartPage } from "../pages/user/cart";
 import { AdminHomePage, RegisterProducts, AdminOrdersPage, UpdateProduct } from "../pages/admin/";
+import { AdminLayout } from "../layouts/admin";
+import { UserLayout } from "../layouts/user/user-layout";
 
 export const AppRoutes = () => {
   return (
@@ -18,7 +20,7 @@ export const AppRoutes = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/products/:id" element={<ProductDetails />} />
 
-      <Route path="/user">
+      <Route path="/user" element={<UserLayout />}>
         <Route
           index
           element={
@@ -61,7 +63,7 @@ export const AppRoutes = () => {
         />
       </Route>
 
-      <Route path="/admin">
+      <Route path="/admin" element={<AdminLayout />}>
         <Route
           index
           element={
