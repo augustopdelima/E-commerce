@@ -4,7 +4,7 @@ import Logo from "../../assets/logo.svg";
 
 export const Header = () => {
   return (
-    <header className="w-full flex flex-col items-center justify-between  border-b border-gray-300 box-border">
+    <header className="w-full flex flex-col items-center  justify-between  border-b border-gray-300 box-border">
       <h1 className="w-full text-center font-light text-xl bg-indigo-900 text-white h-10">Sporty's - Energia, estilo e performance</h1>
 
       <div className="w-full flex justify-between px-8 py-4 items-center">

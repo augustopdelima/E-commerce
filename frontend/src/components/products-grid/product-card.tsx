@@ -18,7 +18,7 @@ export const ProductCard: FC<ProductCardProps> = ({ product }) => {
   const hasStock = stock > 0;
 
   function handleAddToCart() {
-    if (user?.type === "client") return;
+    if (user?.type !== "client") return;
     addToCart({ ...product, quantity: 1 });
   }
 
