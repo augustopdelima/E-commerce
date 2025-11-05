@@ -3,42 +3,72 @@ import { orderService } from "../../services/order";
 import { formatPrice } from "../../helpers";
 
 interface ListOrdersProps {
-    accessToken: string;
+  accessToken: string;
 }
 
 export const ListOrders = ({ accessToken }: ListOrdersProps) => {
-
-
   const { data } = useSuspenseQuery({
     queryKey: ["orders-list"],
-    queryFn: ()=> orderService.getOrders(accessToken),
+    queryFn: () => orderService.getOrders(accessToken),
   });
 
-
   if (data.length === 0) {
-    return <p>Nenhum pedido encontrado.</p>;
+    return (
+      <p className="text-center text-gray-500 py-6">
+        Nenhum pedido encontrado.
+      </p>
+    );
   }
 
   return (
-    <ul>
+    <div className="space-y-6">
       {data.map((order) => (
-        <li key={order.id}>
-            <h3>Pedido #{order.id}</h3>
-            <p> Usuário: {order.user.name}</p>
-            <p>Total: {formatPrice(order.total)}</p>
-            <p>Status: {order.status}</p>
-            <h4>Itens:</h4>
-            <ul>
+        <div
+          key={order.id}
+          className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-200"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold text-gray-800">
+              Pedido #{order.id}
+            </h3>
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                order.status === "Concluído"
+                  ? "bg-green-100 text-green-700"
+                  : order.status === "Pendente"
+                  ? "bg-yellow-100 text-yellow-700"
+                  : "bg-gray-100 text-gray-700"
+              }`}
+            >
+              {order.status}
+            </span>
+          </div>
+
+          <p className="text-gray-700 mb-2">
+            <strong>Usuário:</strong> {order.user.name}
+          </p>
+          <p className="text-gray-700 mb-4">
+            <strong>Total:</strong> {formatPrice(order.total)}
+          </p>
+
+          <div>
+            <h4 className="text-md font-semibold text-gray-800 mb-2">Itens:</h4>
+            <ul className="divide-y divide-gray-100">
               {order.items.map((item) => (
-                <li key={item.productId}>
-                  <p>Produto: {item.productId}</p>
-                  <p>Quantidade: {item.quantity}</p>
-                  <p>Preço: {formatPrice(item.price)}</p>
+                <li
+                  key={item.productId}
+                  className="py-2 flex justify-between items-center text-gray-700"
+                >
+                  <span>
+                    Produto #{item.productId} — {item.quantity}x
+                  </span>
+                  <span className="font-medium">{formatPrice(item.price)}</span>
                 </li>
               ))}
             </ul>
-        </li>
+          </div>
+        </div>
       ))}
-    </ul>   
+    </div>
   );
 };

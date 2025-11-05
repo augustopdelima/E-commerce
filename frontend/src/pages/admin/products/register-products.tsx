@@ -38,31 +38,84 @@ export const RegisterProducts = () => {
   if (!user) return <div>Usuário não está logado!</div>;
 
   return (
-    <section>
-      <h1>Registrar Produtos</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Url da image:
-          <input type="file" name="imageUrl" required accept="image/*" />
-        </label>
-        <label>
-          Nome do Produto:
-          <input type="text" name="name" required />
-        </label>
-        <label>
-          Descrição:
-          <textarea name="description" required></textarea>
-        </label>
-        <label>
-          Preço:
-          <input type="number" name="price" step="0.01" required />
-        </label>
-        <label>
-          Estoque:
-          <input type="number" name="stock" required />
-        </label>
-        <button type="submit">Registrar Produto</button>
-      </form>
+    <section className="max-w-2xl mx-auto p-6">
+      <div className="bg-white rounded-2xl shadow-md p-8">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b">
+          Registrar Produto
+        </h1>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex flex-col space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              URL da Imagem:
+              <input
+                type="file"
+                name="imageUrl"
+                required
+                accept="image/*"
+                className="mt-1 block w-full p-4 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </label>
+          </div>
+
+          <div className="flex flex-col space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Nome do Produto:
+              <input
+                type="text"
+                name="name"
+                required
+                className="mt-1 block w-full p-4 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </label>
+          </div>
+
+          <div className="flex flex-col space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Descrição:
+              <textarea
+                name="description"
+                required
+                className="mt-1 block w-full p-4 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </label>
+          </div>
+
+          <div className="flex flex-col space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Preço:
+              <input
+                type="number"
+                name="price"
+                step="0.01"
+                required
+                className="mt-1 block w-full p-4 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </label>
+          </div>
+
+          <div className="flex flex-col space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Estoque:
+              <input
+                type="number"
+                name="stock"
+                required
+                className="mt-1 block w-full p-4 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </label>
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Registrar Produto
+            </button>
+          </div>
+        </form>
+      </div>
     </section>
   );
 };

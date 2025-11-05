@@ -9,23 +9,41 @@ export const UpdateProduct = () => {
 
   if (!user || !accessToken) {
     return (
-      <section>
-        <h2>Acesso negado</h2>
-        <p>Você precisa estar logado para atualizar produtos.</p>
-        <button onClick={() => navigate("/login")}>Ir para login</button>
+      <section className="max-w-lg mx-auto mt-10 p-6 bg-white rounded-2xl shadow-md">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Acesso negado</h2>
+        <p className="text-gray-600 mb-6">
+          Você precisa estar logado para atualizar produtos.
+        </p>
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          onClick={() => navigate("/login")}
+        >
+          Ir para login
+        </button>
       </section>
     );
   }
 
   if (!id) {
     return (
-      <section>
-        <h2>ID do produto não encontrado</h2>
-        <p>Não foi possível identificar o produto a ser atualizado.</p>
-        <button onClick={() => navigate("/admin")}>Voltar</button>
+      <section className="max-w-lg mx-auto mt-10 p-6 bg-white rounded-2xl shadow-md">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          ID do produto não encontrado
+        </h2>
+        <p className="text-gray-600 mb-6">
+          Não foi possível identificar o produto a ser atualizado.
+        </p>
+        <button
+          className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+          onClick={() => navigate("/admin")}
+        >
+          Voltar
+        </button>
       </section>
     );
   }
 
-  return <UpdateProductForm id={id} accessToken={accessToken} userId={user.id} />;
+  return (
+    <UpdateProductForm id={id} accessToken={accessToken} userId={user.id} /> 
+  );
 };
