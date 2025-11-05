@@ -86,7 +86,6 @@ interface LoginResponse {
   accessToken: string;
 }
 
-
 describe("Rotas Usuário", () => {
   it("Deve registrar um novo usuário", async () => {
     const email = "joao@example.com";
@@ -199,25 +198,28 @@ describe("Rotas Usuário", () => {
       body: JSON.stringify({ email: "admin@example.com", password: "123456" }),
     });
 
-
     expect(loginRes.status).toBe(200);
-    const loginData = await loginRes.json() as  { accessToken:string, refreshToken:string};
+    const loginData = (await loginRes.json()) as {
+      accessToken: string;
+      refreshToken: string;
+    };
     const oldAccessToken = loginData.accessToken;
     const oldRefreshToken = loginData.refreshToken;
-    
+
     const refreshRes = await fetch(`${baseUrl}/user/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json",},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        refreshToken: oldRefreshToken
-      })
+        refreshToken: oldRefreshToken,
+      }),
     });
 
-    
     expect(refreshRes.status).toBe(200);
-    const refreshData = (await refreshRes.json()) as { accessToken: string, refreshToken:string };
+    const refreshData = (await refreshRes.json()) as {
+      accessToken: string;
+      refreshToken: string;
+    };
 
-    
     expect(refreshData).toHaveProperty("accessToken");
     expect(refreshData.accessToken).not.toBe(oldAccessToken);
     expect(refreshData.refreshToken).not.toBe(oldRefreshToken);
@@ -226,12 +228,11 @@ describe("Rotas Usuário", () => {
   it("Deve falhar se refreshToken for inválido", async () => {
     const refreshRes = await fetch(`${baseUrl}/user/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        refreshToken: "aaa"
+        refreshToken: "aaa",
       }),
     });
-
 
     expect(refreshRes.status).toBe(403);
     const data = await refreshRes.json();
@@ -277,7 +278,10 @@ describe("Rotas Usuário", () => {
   it("Deve retornar 400 ao enviar dados inválidos", async () => {
     const res = await fetch(`${baseUrl}/user/${userClientId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({
         email: "email-invalido", // formato incorreto
       }),

@@ -6,6 +6,7 @@ export class Order extends Model {
   declare userId: number;
   declare total: number;
   declare status: string;
+  declare createdAt: Date;
 }
 
 Order.init(
@@ -22,6 +23,11 @@ Order.init(
     status: {
       type: DataTypes.STRING,
       defaultValue: "created",
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
   },
   {
