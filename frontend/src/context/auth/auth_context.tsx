@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { ReactNode, FC } from "react";
 import { authService, setupInterceptors } from "../../services/auth";
 import { AuthContext } from "./auth_hook";
@@ -15,7 +15,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [loadingUser, setLoadingUser] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false)
-
+  const refreshPromiseRef = useRef<Promise<{ accessToken: string; refreshToken: string }> | null>(null);
   const isAuthenticated = !!accessToken && !!user;
 
   // Carrega usuário e tokens do localStorage
@@ -79,35 +79,47 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem("refreshToken");
   }, []);
 
-  const refresh = useCallback(async () => {
-    if (isRefreshing || !refreshToken) {
-      throw new Error(
-        "Refresh already in progress or no refresh token available"
-      );
-    }
 
-    try {
-      setIsRefreshing(true);
-      const newTokens = await authService.refreshToken(refreshToken);
 
-      if (newTokens.accessToken) {
-        setAccessToken(newTokens.accessToken);
-        setRefreshToken(newTokens.refreshToken);
-        localStorage.setItem("accessToken", newTokens.accessToken);
-        localStorage.setItem("refreshToken", newTokens.refreshToken);
-        return newTokens;
-      }
-
-      throw new Error("Failed to refresh token");
-    } catch (error) {
+   const refresh = useCallback(async () => {
+    if (!refreshToken) {
       await logout();
-      throw error;
-    } finally {
-      setIsRefreshing(false);
+      throw new Error("No refresh token available");
     }
-  }, [refreshToken, isRefreshing, logout]);
 
-  
+    // If a refresh is already in progress, return the same promise
+    if (refreshPromiseRef.current) {
+      return refreshPromiseRef.current;
+    }
+
+    setIsRefreshing(true);
+
+    const p = authService
+      .refreshToken(refreshToken)
+      .then((newTokens) => {
+        if (newTokens.accessToken) {
+          setAccessToken(newTokens.accessToken);
+          setRefreshToken(newTokens.refreshToken);
+          localStorage.setItem("accessToken", newTokens.accessToken);
+          localStorage.setItem("refreshToken", newTokens.refreshToken);
+          return newTokens;
+        }
+        throw new Error("Failed to refresh token");
+      })
+      .catch(async (err) => {
+        await logout();
+        throw err;
+      })
+      .finally(() => {
+        setIsRefreshing(false);
+        refreshPromiseRef.current = null;
+      });
+
+    refreshPromiseRef.current = p;
+    return p;
+  }, [refreshToken, logout]);
+
+  // ...setupInterceptors effect and provider return...
   useEffect(() => {
     const cleanup = setupInterceptors({
       getAccessToken,
@@ -121,6 +133,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       }
     };
   }, [getAccessToken, refresh, logout]);
+  
+  
 
   return (
     <AuthContext.Provider
@@ -129,6 +143,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         accessToken,
         refreshToken,
         isAuthenticated,
+        isRefreshing,
         loadingUser,
         login,
         register,

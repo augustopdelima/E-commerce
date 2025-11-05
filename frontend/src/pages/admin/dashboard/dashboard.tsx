@@ -1,118 +1,134 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-
-interface TopProduct {
-  name: string;
-  quantity: number;
-  revenue: number;
-}
-
-interface LowStockProduct {
-  id: number;
-  name: string;
-  stock: number;
-  price: number;
-}
-
-interface DashboardData {
-  period: { start: string; end: string };
-  totalSales: number;
-  topProduct: TopProduct | null;
-  lowStock: LowStockProduct[];
-}
+import { dashboardService } from "../../../services/dashboard";
+import type { DashboardStats } from "../../../types/dashboard";
+import { useAuth } from "../../../context/auth";
 
 
-const fetchDashboard = async (): Promise<DashboardData> => {
-  const { data } = await axios.get("/api/dashboard");
-  return data;
-};
+ 
+
+const currency = (value: number) =>
+  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+    value
+  );
 
 export const Dashboard: React.FC = () => {
-  const { data, isLoading, isError } = useQuery({queryKey:["dashboard"],queryFn:fetchDashboard });
+
+  const { accessToken, user } = useAuth();
+
+  const { data, isLoading, isError } = useQuery<DashboardStats>({
+    queryKey: ["dashboard"],
+    queryFn: () => dashboardService.getDashboardStats(accessToken, user?.id), // <-- retorna a Promise
+    enabled: !!accessToken && !!user, // só busca quando o token estiver disponível
+    staleTime: 1000 * 60, // opcional: cache por 1 min
+  });
 
   if (isLoading)
     return (
-      <div className="flex justify-center items-center h-screen">
-        <span className="text-gray-500 text-lg">Carregando...</span>
+      <div className="flex items-center justify-center min-h-screen p-8 bg-gray-50">
+        <div role="status" aria-live="polite" className="text-gray-500">
+          Carregando estatísticas...
+        </div>
       </div>
     );
 
+  console.log(data);
+
   if (isError || !data || !data.period)
     return (
-      <div className="flex justify-center items-center h-screen">
-        <span className="text-red-500 text-lg">Erro ao carregar dados</span>
+      <div className="flex items-center justify-center min-h-screen p-8 bg-gray-50">
+        <div className="text-red-600">Erro ao carregar dados do dashboard.</div>
       </div>
     );
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
-      <p className="text-gray-600 mb-8">
-        Período:{" "}
-        <span className="font-medium">
-          {new Date(data.period.start).toLocaleDateString()} -{" "}
-          {new Date(data.period.end).toLocaleDateString()}
-        </span>
-      </p>
+    <div className="p-6 md:p-10 bg-gray-50 min-h-screen">
+      <header className="mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+          Painel Administrativo
+        </h1>
+        <p className="text-sm text-gray-600 mt-1">
+          Período:{" "}
+          <span className="font-medium text-gray-700">
+            {new Date(data.period.start).toLocaleDateString()} —{" "}
+            {new Date(data.period.end).toLocaleDateString()}
+          </span>
+        </p>
+      </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-       
-        <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">Total de Vendas</h2>
-          <p className="text-2xl font-bold text-green-600">R$ {data.totalSales.toFixed(2)}</p>
-        </div>
+      <main className="space-y-6">
+        {/* Top stats */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <h2 className="text-sm text-gray-500">Total de Vendas (mês)</h2>
+            <p className="mt-3 text-2xl md:text-3xl font-bold text-green-600">
+              {currency(data.totalSales)}
+            </p>
+            <p className="text-xs text-gray-400 mt-2">Receita de pedidos concluídos</p>
+          </div>
+ 
+          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <h2 className="text-sm text-gray-500">Produto mais vendido</h2>
+            {data.topProduct ? (
+              <>
+                <p className="mt-3 text-lg font-semibold text-gray-800">
+                  {data.topProduct.name}
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {data.topProduct.quantity} unidades • {currency(data.topProduct.revenue)}
+                </p>
+              </>
+            ) : (
+              <p className="mt-3 text-sm text-gray-500">Nenhum produto vendido</p>
+            )}
+          </div>
 
-       
-        <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">Produto mais vendido</h2>
-          {data.topProduct ? (
-            <>
-              <p className="text-gray-800 font-medium">{data.topProduct.name}</p>
-              <p className="text-gray-600">
-                Quantidade: <span className="font-semibold">{data.topProduct.quantity}</span>
-              </p>
-              <p className="text-gray-600">
-                Receita: <span className="font-semibold">R$ {data.topProduct.revenue.toFixed(2)}</span>
-              </p>
-            </>
+          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <h2 className="text-sm text-gray-500">Produtos com estoque baixo</h2>
+            <p className="mt-3 text-lg font-semibold text-gray-800">
+              {data.lowStock.length}
+            </p>
+            <p className="text-xs text-gray-400 mt-2">Itens abaixo do limite</p>
+          </div>
+        </section>
+
+        {/* Low stock table */}
+        <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">Produtos com estoque baixo</h3>
+            <span className="text-sm text-gray-500">
+              {data.lowStock.length} itens
+            </span>
+          </div>
+
+          {data.lowStock.length === 0 ? (
+            <p className="text-gray-500">Nenhum produto com estoque baixo.</p>
           ) : (
-            <p className="text-gray-500">Nenhum produto vendido neste período</p>
-          )}
-        </div>
-
-        
-        <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition col-span-1 md:col-span-3">
-          <h2 className="text-lg font-semibold text-gray-700 mb-4">Produtos com estoque baixo</h2>
-          {data.lowStock.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white">
+            <div className="overflow-auto">
+              <table className="min-w-full text-left">
                 <thead>
-                  <tr className="bg-gray-100">
-                    <th className="py-2 px-4 text-left text-gray-600">ID</th>
-                    <th className="py-2 px-4 text-left text-gray-600">Nome</th>
-                    <th className="py-2 px-4 text-left text-gray-600">Estoque</th>
-                    <th className="py-2 px-4 text-left text-gray-600">Preço</th>
+                  <tr className="text-xs text-gray-500 uppercase">
+                    <th className="py-3 px-4">ID</th>
+                    <th className="py-3 px-4">Nome</th>
+                    <th className="py-3 px-4">Estoque</th>
+                    <th className="py-3 px-4">Preço</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.lowStock.map((p) => (
-                    <tr key={p.id} className="border-b hover:bg-gray-50">
-                      <td className="py-2 px-4">{p.id}</td>
-                      <td className="py-2 px-4">{p.name}</td>
-                      <td className="py-2 px-4 text-red-600 font-semibold">{p.stock}</td>
-                      <td className="py-2 px-4">R$ {p.price.toFixed(2)}</td>
+                    <tr key={p.id} className="border-t">
+                      <td className="py-3 px-4 text-sm text-gray-700">{p.id}</td>
+                      <td className="py-3 px-4 text-sm text-gray-800">{p.name}</td>
+                      <td className="py-3 px-4 text-sm text-red-600 font-semibold">{p.stock}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700">{currency(p.price)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          ) : (
-            <p className="text-gray-500">Nenhum produto com estoque baixo</p>
           )}
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 };
-
