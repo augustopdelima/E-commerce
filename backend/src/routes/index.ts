@@ -3,3 +3,4 @@ export { default as productRoutes } from "./product_routes";
 export { default as checkoutRoutes } from "./checkout_routes";
 export { default as addressRoutes } from "./address_routes";
 export {default as orderRoutes } from "./order_routes";
+export { default as supplierRoutes } from "./supplier_routes";
