@@ -5,10 +5,12 @@ import { Header } from "./layouts/header/header";
 function App() {
   return (
     <Router>
-      <Header />
-      <main className="flex flex-col items-center w-ful h-full">
-        <AppRoutes />
-      </main>
+     <div className="min-h-screen flex flex-col"> 
+        <Header />
+        <main className="flex-1 w-full"> 
+          <AppRoutes />
+        </main>
+      </div> 
     </Router>
   );
 }

@@ -53,15 +53,17 @@ export const AppRoutes = () => {
             </UserRoute>
           }
         />
-        <Route
-          path="cart"
+        
+      </Route>
+
+      <Route
+          path="user/cart"
           element={
             <UserRoute>
               <CartPage />
             </UserRoute>
           }
         />
-      </Route>
 
       <Route path="/admin" element={<AdminLayout />}>
         <Route

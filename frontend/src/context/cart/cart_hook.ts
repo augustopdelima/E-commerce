@@ -6,7 +6,7 @@ interface CartContextType {
   cartItems: ProductCart[];
   addToCart: (product: ProductCart) => void;
   removeFromCart: (productId: number) => void;
-  updateQuantity: (productId: number, quantity: number) => void;
+  updateQuantity: (productId: number, quantity: number, stock:number) => void;
   clearCart: () => void;
   totalPrice: number;
   totalItems: number;

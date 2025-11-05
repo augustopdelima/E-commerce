@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { addressService } from "../../services/addresses";
 import type { AddressResponse } from "../../types";
 import type { JSX } from "react/jsx-dev-runtime";
+import { useEffect } from "react";
 
 interface AddressSelectorProps {
   userId: string;
@@ -23,14 +24,31 @@ export const AddressSelector = ({
     queryFn: () => addressService.getAll(userId),
   });
 
-  if (isLoading) return <p>Carregando endereços...</p>;
-  if (isError) return <p>Erro ao carregar endereços.</p>;
+  useEffect(() => {
+    if (!selected && addresses.length > 0) {
+      onSelect(addresses[0].id);
+    }
+  }, [addresses, selected, onSelect]);
+
+  if (isLoading)
+    return (
+      <p className="text-gray-500 text-sm italic">Carregando endereços...</p>
+    );
+  if (isError)
+    return (
+      <p className="text-red-500 text-sm italic">
+        Erro ao carregar endereços.
+      </p>
+    );
 
   if (addresses.length === 0) {
     return (
-      <p className="no-address">
+      <p className="text-gray-500 text-sm">
         Nenhum endereço cadastrado.{" "}
-        <a href="/user/address/register" className="register-link">
+        <a
+          href="/user/address/register"
+          className="text-blue-600 hover:underline"
+        >
           Cadastre um endereço
         </a>
       </p>
@@ -38,10 +56,10 @@ export const AddressSelector = ({
   }
 
   return (
-    <div className="address-section">
-      <h3>Selecione o endereço de entrega:</h3>
+    <div className="flex flex-col space-y-2">
+      <label className="text-gray-700 font-medium">Selecione o endereço de entrega:</label>
       <select
-        className="address-select"
+        className="border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         value={selected ?? ""}
         onChange={(e) => onSelect(Number(e.target.value))}
       >

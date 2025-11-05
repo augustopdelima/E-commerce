@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { CartContext } from "./cart_hook";
 import type { ProductCart } from "../../types";
 
-
 interface CartProviderProps {
   children: React.ReactNode;
 }
@@ -17,9 +16,7 @@ export function CartProvider({ children }: CartProviderProps) {
       const existing = prev.find((p) => p.id === product.id);
       if (existing) {
         return prev.map((p) =>
-          p.id === product.id
-            ? { ...p, quantity: (p.quantity || 1) + 1 }
-            : p
+          p.id === product.id ? { ...p, quantity: (p.quantity || 1) + 1 } : p
         );
       }
       return [...prev, { ...product, quantity: 1 }];
@@ -32,17 +29,24 @@ export function CartProvider({ children }: CartProviderProps) {
   };
 
   /** Atualiza a quantidade de um item */
-  const updateQuantity = (productId: number, quantity: number) => {
+  const updateQuantity = (
+    productId: number,
+    quantity: number,
+    stock: number
+  ) => {
     setCartItems((prev) => {
       if (quantity <= 0) {
         return prev.filter((p) => p.id !== productId);
       }
+
+      // Garante que a quantidade não ultrapasse o estoque
+      const newQuantity = Math.min(quantity, stock);
+
       return prev.map((p) =>
-        p.id === productId ? { ...p, quantity } : p
+        p.id === productId ? { ...p, quantity: newQuantity } : p
       );
     });
   };
-
   /** Limpa o carrinho */
   const clearCart = () => setCartItems([]);
 

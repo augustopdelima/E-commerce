@@ -45,32 +45,46 @@ export const CartSummary = ({
   });
 
   return (
-    <aside className="cart-summary">
-      <h3>Resumo</h3>
-      <p>
+    <aside className="bg-white shadow-md rounded-2xl p-6 w-full sm:w-80 flex-shrink-0 space-y-4">
+      <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-2">
+        Resumo
+      </h3>
+
+      <p className="text-gray-700">
         Subtotal ({totalItems} itens):{" "}
-        <strong>R$ {totalPrice.toFixed(2)}</strong>
+        <span className="text-blue-600 font-bold">R$ {totalPrice.toFixed(2)}</span>
       </p>
 
+      
       <button
-        className="checkout-btn"
+        className="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={() => checkoutMutation.mutate()}
         disabled={!selectedAddress || checkoutMutation.isPending}
       >
         {checkoutMutation.isPending ? "Processando..." : "Finalizar compra"}
       </button>
 
-      <button className="clear-btn" onClick={onClearCart}>
+      
+      <button
+        className="w-full py-2 px-4 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
+        onClick={onClearCart}
+      >
         Esvaziar carrinho
       </button>
 
-      <AddressSelector
-        userId={userId}
-        selected={selectedAddress}
-        onSelect={setSelectedAddress}
-      />
+     
+      <div className="mt-4">
+        <AddressSelector
+          userId={userId}
+          selected={selectedAddress}
+          onSelect={setSelectedAddress}
+        />
+      </div>
 
-      {message && <p className="message">{message}</p>}
+      
+      {message && (
+        <p className="mt-2 text-sm text-green-600 font-medium">{message}</p>
+      )}
     </aside>
   );
 };
