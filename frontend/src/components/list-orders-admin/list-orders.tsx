@@ -60,7 +60,7 @@ export const ListOrders = ({ accessToken }: ListOrdersProps) => {
                   className="py-2 flex justify-between items-center text-gray-700"
                 >
                   <span>
-                    Produto #{item.productId} — {item.quantity}x
+                    Produto #{item.Product.name} — {item.quantity}x
                   </span>
                   <span className="font-medium">{formatPrice(item.price)}</span>
                 </li>

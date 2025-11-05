@@ -1,7 +1,12 @@
 interface OrderProduct {
-  productId: string;
-  quantity: string;
+  productId: number;
+  quantity: number;
   price: string;
+  Product: {
+    id: number;
+    name: string;
+    price: string;
+  };
 }
 
 export interface Order {
@@ -17,5 +22,5 @@ export interface Order {
 
 export interface ItemsOrder  {
   productId: number;
-  quantity: number;
+  quantity: number; 
 }

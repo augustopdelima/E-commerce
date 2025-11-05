@@ -6,12 +6,30 @@ import type {
   SetupInterceptorsParams,
 } from "../types";
 
+
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value?: unknown) => void;
+  reject: (reason?: unknown) => void;
+}> = [];
+
+const processQueue = (error: Error | null, token: string | null = null) => {
+  failedQueue.forEach((promise) => {
+    if (error) {
+      promise.reject(error);
+    } else {
+      promise.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 export function setupInterceptors({
   getAccessToken,
   refresh,
   logout,
 }: SetupInterceptorsParams) {
-  // Request interceptor → adiciona token automaticamente
+  // Request interceptor - adds token automatically
   api.interceptors.request.use((config) => {
     const token = getAccessToken();
     if (token) {
@@ -20,26 +38,42 @@ export function setupInterceptors({
     return config;
   });
 
-  //Response interceptor → tenta renovar token se der 401
+  // Response interceptor - handles token refresh
   api.interceptors.response.use(
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
 
       if (error.response?.status === 401 && !originalRequest._retry) {
+        if (isRefreshing) {
+          try {
+            const token = await new Promise((resolve, reject) => {
+              failedQueue.push({ resolve, reject });
+            });
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          } catch (err) {
+            return Promise.reject(err);
+          }
+        }
+
         originalRequest._retry = true;
+        isRefreshing = true;
 
         try {
           const newToken = await refresh();
           if (newToken.accessToken) {
             originalRequest.headers.Authorization = `Bearer ${newToken.accessToken}`;
-            return api(originalRequest); // refaz a request original
+            processQueue(null, newToken.accessToken);
+            return api(originalRequest);
           }
         } catch (err) {
-          console.error("Falha ao renovar token:", err);
+          processQueue(new Error('Failed to refresh token'));
+          console.error("Failed to refresh token:", err);
+          await logout();
+        } finally {
+          isRefreshing = false;
         }
-
-        await logout(); // se refresh falhar, força logout
       }
 
       return Promise.reject(error);
@@ -47,13 +81,14 @@ export function setupInterceptors({
   );
 }
 
+
 export const authService = {
   async login(email: string, password: string): Promise<LoginResponse> {
     const res = await api.post<LoginResponse>("/user/login", {
       email,
       password,
     });
-    return res.data; // 🔹 Retorna apenas os dados úteis
+    return res.data; 
   },
 
   async register(
@@ -69,8 +104,10 @@ export const authService = {
     return res.data;
   },
 
-  async refreshToken(): Promise<RefreshResponse> {
-    const res = await api.post("/user/refresh");
+  async refreshToken(refreshToken: string): Promise<RefreshResponse> {
+    const res = await api.post("/user/refresh", {
+      refreshToken,
+    });
     return res.data;
   },
 };

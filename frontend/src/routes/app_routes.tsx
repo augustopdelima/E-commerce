@@ -8,7 +8,13 @@ import { OrdersPage } from "../pages/user/orders";
 import { UserUpdate } from "../pages/user/update";
 import { AddressesListPage, RegisterAddress } from "../pages/user/address";
 import { CartPage } from "../pages/user/cart";
-import { AdminHomePage, RegisterProducts, AdminOrdersPage, UpdateProduct } from "../pages/admin/";
+import {
+  AdminHomePage,
+  RegisterProducts,
+  AdminOrdersPage,
+  UpdateProduct,
+  Dashboard,
+} from "../pages/admin/";
 import { AdminLayout } from "../layouts/admin";
 import { UserLayout } from "../layouts/user/user-layout";
 
@@ -53,19 +59,26 @@ export const AppRoutes = () => {
             </UserRoute>
           }
         />
-        
       </Route>
 
       <Route
-          path="user/cart"
-          element={
-            <UserRoute>
-              <CartPage />
-            </UserRoute>
-          }
-        />
+        path="user/cart"
+        element={
+          <UserRoute>
+            <CartPage />
+          </UserRoute>
+        }
+      />
 
       <Route path="/admin" element={<AdminLayout />}>
+        <Route
+          path="dashboard"
+          element={
+            <AdminRoute>
+              <Dashboard />
+            </AdminRoute>
+          }
+        />
         <Route
           index
           element={
