@@ -10,17 +10,7 @@ on:
 
 jobs:
   backend-tests:
-    name: Backend Tests
     runs-on: ubuntu-latest
-
-    services:
-      sqlite:
-        image: nouchka/sqlite3
-        options: >-
-          --health-cmd "sqlite3 /dev/null 'select 1'" 
-          --health-interval 10s 
-          --health-timeout 5s 
-          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -37,7 +27,10 @@ jobs:
           npm ci
 
       - name: Run backend tests
+        env:
+          NODE_ENV: test
         run: |
           cd backend
           npm run test
+
  
