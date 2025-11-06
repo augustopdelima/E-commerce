@@ -9,7 +9,10 @@ let server: http.Server;
 let baseUrl: string;
 
 beforeAll(async () => {
+  
   await sequelize.sync({ force: true });
+
+
   server = app.listen(0);
   const { port } = server.address() as AddressInfo;
   baseUrl = `http://127.0.0.1:${port.toString()}`;
@@ -20,8 +23,8 @@ afterAll(async () => {
   server.close();
 });
 
-
 beforeEach(async () => {
+  
   await Product.destroy({ where: {} });
 });
 
@@ -67,9 +70,7 @@ describe("Rotas Produto", () => {
       stock: 20,
     });
 
-    const res = await fetch(`${baseUrl}/product`, {
-      method: "GET",
-    });
+    const res = await fetch(`${baseUrl}/product`, { method: "GET" });
 
     expect(res.status).toBe(200);
 

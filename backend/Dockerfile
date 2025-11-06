@@ -5,6 +5,7 @@ WORKDIR /app
 
 COPY package*.json tsconfig*.json ./
 
+
 RUN mkdir -p /app/uploads /app/data
 RUN npm ci
 
@@ -31,6 +32,15 @@ COPY --from=builder /app/.env ./.env
 
 COPY --from=builder /app/seed.js ./seed.js
 
+
+RUN mkdir -p /app/data
+
+
+RUN chown -R node:node /app
+
+
+
+USER node
 
 RUN npm ci --omit=dev
 

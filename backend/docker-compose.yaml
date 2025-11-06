@@ -7,6 +7,23 @@ services:
       - "3000:3000"
     env_file: .env
     volumes:
+     
       - ./data:/app/data
       - ./uploads:/app/uploads
-    command: sh -c "if [ ! -f /app/data/database.sqlite ]; then echo 'Banco não encontrado, executando seed...' && node seed.js; else echo 'Banco já existe, pulando seed.'; fi && npm run start"
+    
+    entrypoint: |
+      /bin/sh -c '
+       
+        chown -R node:node /app/data
+        chown -R node:node /app/uploads
+        
+       
+        if [ ! -f /app/data/database.sqlite ]; then 
+          echo "Banco não encontrado, executando seed..."  
+          node seed.js
+        else 
+          echo "Banco já existe, pulando seed."
+        fi
+
+        exec npm run start
+      '

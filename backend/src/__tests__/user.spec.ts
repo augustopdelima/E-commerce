@@ -12,9 +12,9 @@ import { User } from "../models/user";
 let server: http.Server;
 let baseUrl: string;
 
-let userAdminId = 0;
 let userClientId = "";
 let token = "";
+let tokenAdmin = "";
 
 beforeAll(async () => {
   await sequelize.sync({ force: true });
@@ -26,14 +26,13 @@ beforeAll(async () => {
   const bcrypt = await import("bcrypt");
   const hashed = await bcrypt.hash("123456", 10);
 
-  const user = await User.create({
+  await User.create({
     name: "Admin",
     email: "admin@example.com",
     password: hashed,
     type: "admin",
   });
 
-  userAdminId = user.id;
 
   // Criar usuário inicial para testar update
   const res = await fetch(`${baseUrl}/user/register`, {
@@ -60,6 +59,19 @@ beforeAll(async () => {
 
   const loginData = (await loginRes.json()) as LoginResponse;
   token = loginData.accessToken;
+
+  const loginAdmin = await fetch(`${baseUrl}/user/login`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      email:"admin@example.com",
+      password:"123456",
+    })
+  });
+
+  const loginAdminData = (await loginAdmin.json()) as LoginResponse;
+  
+  tokenAdmin = loginAdminData.accessToken;
 });
 
 afterAll(async () => {
@@ -114,7 +126,6 @@ describe("Rotas Usuário", () => {
     expect(userData.type).toBe("client");
     expect(data.message).toBe("Usuário cadastrado com sucesso");
   });
-
   it("Deve listar e retornar o usuário cadastrado", async () => {
     const email = "joao2@example.com";
     const name = "João2";
@@ -123,11 +134,7 @@ describe("Rotas Usuário", () => {
     const res = await fetch(`${baseUrl}/user/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        email,
-        password: "123456",
-      }),
+      body: JSON.stringify({ name, email, password: "123456" }),
     });
 
     expect(res.status).toBe(201);
@@ -136,7 +143,7 @@ describe("Rotas Usuário", () => {
 
     const dataUser = await fetch(`${baseUrl}/user/${data.user.id}`, {
       method: "GET",
-      headers: { userid: userAdminId.toString() },
+      headers: { Authorization: `Bearer ${tokenAdmin}`},
     });
 
     expect(dataUser.status).toBe(200);
