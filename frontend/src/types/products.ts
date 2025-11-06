@@ -15,5 +15,9 @@ export interface ProductResponse {
     description:string;
     imageUrl:string;
     supplierId?:number;
+    supplier?: {
+        id: number,
+        name: string
+  }
 }
 

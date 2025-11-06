@@ -14,6 +14,7 @@ export const ProductsTable: FC<ProductsTableProps> = ({ userId, accessToken }) =
     queryFn: () => productService.getAllProducts(),
   });
 
+
   const queryClient = useQueryClient();
 
   const deleteProduct = useMutation({
@@ -33,6 +34,8 @@ export const ProductsTable: FC<ProductsTableProps> = ({ userId, accessToken }) =
     deleteProduct.mutate(idString);
   }
 
+  
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
@@ -43,6 +46,7 @@ export const ProductsTable: FC<ProductsTableProps> = ({ userId, accessToken }) =
             <th className="py-2 px-4 text-left text-sm font-semibold text-gray-700">Descrição</th>
             <th className="py-2 px-4 text-left text-sm font-semibold text-gray-700">Preço</th>
             <th className="py-2 px-4 text-left text-sm font-semibold text-gray-700">Estoque</th>
+            <th className="py-2 px-4 text-left text-sm font-semibold text-gray-700">Fornecedor</th>
             <th className="py-2 px-4 text-left text-sm font-semibold text-gray-700">Ações</th>
           </tr>
         </thead>
@@ -54,6 +58,7 @@ export const ProductsTable: FC<ProductsTableProps> = ({ userId, accessToken }) =
               <td className="py-2 px-4 text-sm text-gray-700">{product.description}</td>
               <td className="py-2 px-4 text-sm text-gray-700">R$ {product.price.toFixed(2)}</td>
               <td className="py-2 px-4 text-sm text-gray-700">{product.stock}</td>
+              <td className="py-2 px-4 text-sm text-gray-700">{product.supplier?.name}</td>
               <td className="py-2 px-4 text-sm text-gray-700">
                 <div className="flex gap-2">
                   <Link
