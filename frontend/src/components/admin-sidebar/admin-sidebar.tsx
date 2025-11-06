@@ -15,6 +15,19 @@ export const AdminSidebar = () => {
             }`
           }
         >
+          Dashboard
+        </NavLink>
+
+        <NavLink
+          to="/admin/products"
+          className={({ isActive }) =>
+            `block px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+              isActive
+                ? "bg-blue-600 text-white shadow"
+                : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+            }`
+          }
+        >
           Gerenciar Produtos
         </NavLink>
 
@@ -42,6 +55,20 @@ export const AdminSidebar = () => {
           }
         >
           Histórico de Pedidos
+        </NavLink>
+
+        <NavLink
+          to="/admin/suppliers"
+          end
+          className={({ isActive }) =>
+            `block px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+              isActive
+                ? "bg-blue-600 text-white shadow"
+                : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+            }`
+          }
+        >
+          Listar Fornecedores
         </NavLink>
       </nav>
     </aside>

@@ -17,7 +17,7 @@ export const ProductsTable: FC<ProductsTableProps> = ({ userId, accessToken }) =
   const queryClient = useQueryClient();
 
   const deleteProduct = useMutation({
-    mutationFn: (id: string) => productService.deleteProduct(id, userId, accessToken),
+    mutationFn: (id: string) => productService.deleteProduct(id, accessToken, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       alert("Produto excluído com sucesso!");
@@ -64,7 +64,7 @@ export const ProductsTable: FC<ProductsTableProps> = ({ userId, accessToken }) =
                   </Link>
                   <button
                     onClick={() => handleDeleteProduct(product.id)}
-                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                    className="px-3 cursor-pointer py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
                   >
                     Excluir
                   </button>

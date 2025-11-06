@@ -14,6 +14,8 @@ import {
   AdminOrdersPage,
   UpdateProduct,
   Dashboard,
+  SupplierFormPage,
+  SupplierList,
 } from "../pages/admin/";
 import { AdminLayout } from "../layouts/admin";
 import { UserLayout } from "../layouts/user/user-layout";
@@ -72,7 +74,7 @@ export const AppRoutes = () => {
 
       <Route path="/admin" element={<AdminLayout />}>
         <Route
-          path="dashboard"
+          index
           element={
             <AdminRoute>
               <Dashboard />
@@ -80,7 +82,7 @@ export const AppRoutes = () => {
           }
         />
         <Route
-          index
+          path="products"
           element={
             <AdminRoute>
               <AdminHomePage />
@@ -108,6 +110,30 @@ export const AppRoutes = () => {
           element={
             <AdminRoute>
               <UpdateProduct />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="suppliers"
+          element={
+            <AdminRoute>
+              <SupplierList />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="suppliers/new"
+          element={
+            <AdminRoute>
+              <SupplierFormPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="suppliers/edit/:id"
+          element={
+            <AdminRoute>
+              <SupplierFormPage />
             </AdminRoute>
           }
         />

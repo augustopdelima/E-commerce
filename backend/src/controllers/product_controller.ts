@@ -6,12 +6,13 @@ export interface ProductDataBody {
   description: string;
   price: number;
   stock: number;
+  supplierId?: number;
 }
 
 export function ProductController(productService: ProductServiceInterface) {
   async function registerProduct(req: Request, res: Response) {
     try {
-      const { name, description, price, stock } = req.body as ProductDataBody;
+      const { name, description, price, stock, supplierId } = req.body as ProductDataBody;
       const file = req.file;
 
       const imageUrl = file
@@ -24,7 +25,9 @@ export function ProductController(productService: ProductServiceInterface) {
         price,
         stock,
         imageUrl,
+        supplierId,
       });
+
       res.status(201).json(product);
     } catch (error) {
       console.log(error);
@@ -34,9 +37,7 @@ export function ProductController(productService: ProductServiceInterface) {
 
   async function getProduct(req: Request, res: Response) {
     try {
-      const product = await productService.getProductById(
-        Number(req.params.id)
-      );
+      const product = await productService.getProductById(Number(req.params.id));
       if (!product)
         return res.status(404).json({ error: "Produto não encontrado" });
       res.json(product);
@@ -59,16 +60,17 @@ export function ProductController(productService: ProductServiceInterface) {
   async function updateProduct(req: Request, res: Response) {
     try {
       const file = req.file;
-      const { name, description, price, stock } = req.body as ProductDataBody;
-      const product = await productService.getProductById(
-        Number(req.params.id)
-      );
-      const imageUrl = file
-        ? `${req.protocol}://${req.get("host")?.toString() ?? "localhost:3000"}/uploads/${file.filename}`
-        : product?.imageUrl;
+      const { name, description, price, stock, supplierId } = req.body as ProductDataBody;
+
+      const product = await productService.getProductById(Number(req.params.id));
       if (!product)
         return res.status(404).json({ error: "Produto não encontrado" });
-      await product.update({ name, description, price, stock, imageUrl });
+
+      const imageUrl = file
+        ? `${req.protocol}://${req.get("host")?.toString() ?? "localhost:3000"}/uploads/${file.filename}`
+        : product.imageUrl;
+
+      await product.update({ name, description, price, stock, imageUrl, supplierId });
       res.json(product);
     } catch (error) {
       console.log(error);
@@ -78,16 +80,17 @@ export function ProductController(productService: ProductServiceInterface) {
 
   async function deleteProduct(req: Request, res: Response) {
     try {
-      const product = await productService.getProductById(
-        Number(req.params.id)
-      );
+      const product = await productService.getProductById(Number(req.params.id));
       if (!product)
         return res.status(404).json({ error: "Produto não encontrado" });
-      await product.destroy();
-      res.status(204).send();
+
+      
+      await product.update({ active: false });
+
+      res.status(200).json({ message: "Produto inativado com sucesso" });
     } catch (error) {
       console.log(error);
-      res.status(400).json({ error: "Erro ao excluir produto" });
+      res.status(400).json({ error: "Erro ao inativar produto" });
     }
   }
 

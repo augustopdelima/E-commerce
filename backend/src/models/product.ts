@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-
+import { Supplier } from "./supplier";
 import sequelize from "../database";
 
 export class Product extends Model {
@@ -9,6 +9,8 @@ export class Product extends Model {
   declare price: number;
   declare stock: number;
   declare imageUrl?: string;
+  declare supplierId?: number | null;
+  declare active: boolean;
 }
 
 Product.init(
@@ -38,6 +40,19 @@ Product.init(
     imageUrl: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    supplierId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: Supplier,
+        key: "id",
+      },
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
   },
   {
