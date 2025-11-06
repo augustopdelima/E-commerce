@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Supplier } from "../models/supplier";
+import { Supplier } from "../models";
 
 export interface SupplierInput {
   name: string;

@@ -7,8 +7,7 @@ import { User } from "../models/user";
 
 export async function isAdmin(req: AuthRequest, res: Response, next: NextFunction) {
   try {
-    const userId = Number(req.headers.userid);
-    console.log("isAdmin middleware invoked for userId:", userId);
+    const userId = Number(req.headers.userid); 
     if (!userId) return res.status(401).json({ error: "Não autenticado" });
     
     const user = await User.findByPk(userId);

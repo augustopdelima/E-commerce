@@ -4,6 +4,7 @@ export interface ProductForm {
     price:string;
     stock:string;
     image: File;
+    supplierId?:string;
 }
 
 export interface ProductResponse {
@@ -13,5 +14,6 @@ export interface ProductResponse {
     stock:number;
     description:string;
     imageUrl:string;
+    supplierId?:number;
 }
 

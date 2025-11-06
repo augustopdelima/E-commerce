@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 
 const db = new sqlite3.Database("./database.sqlite");
 
+
 async function initDataUser() {
   const passHash = await bcrypt.hash("123456", 10);
 
@@ -28,13 +29,65 @@ async function initDataUser() {
       stmt.finalize((err) => {
         if (err) reject(err);
         else {
-          console.log("Usuários de teste criados com sucesso!");
+          console.log("Usuários criados com sucesso!");
           resolve();
         }
       });
     });
   });
 }
+
+function initDataSuppliers() {
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      
+      db.run(`
+        CREATE TABLE IF NOT EXISTS suppliers (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          email TEXT UNIQUE NOT NULL,
+          phone TEXT,
+          active INTEGER DEFAULT 1,
+          createdAt TEXT,
+          updatedAt TEXT
+        )
+      `, (err) => {
+        if (err) return reject(err);
+
+        const stmt = db.prepare(
+          `INSERT OR IGNORE INTO suppliers 
+           (name, email, phone, active, createdAt, updatedAt) 
+           VALUES (?, ?, ?, ?, ?, ?)`
+        );
+
+        const now = new Date().toISOString();
+
+        const suppliers = [
+          ["SportsWear LTDA", "vendas@sportswear.com", "(11) 98888-1111", 1, now, now],
+          ["FitLife Distribuidora", "contato@fitlife.com", "(21) 97777-2222", 1, now, now],
+          ["ActiveShop", "suporte@activeshop.com", "(31) 96666-3333", 1, now, now],
+          ["ProGear", "info@progear.com", "(41) 95555-4444", 1, now, now],
+          ["Energy Sports", "sales@energysports.com", "(51) 94444-5555", 1, now, now],
+        ];
+
+        // insere cada fornecedor
+        for (const s of suppliers) {
+          stmt.run(s, (err) => {
+            if (err) console.error("Erro ao inserir supplier:", err);
+          });
+        }
+
+       
+        stmt.finalize((err) => {
+          if (err) return reject(err);
+          console.log("✅ Fornecedores criados com sucesso!");
+          resolve();
+        });
+      });
+    });
+  });
+}
+
 
 function initDataProducts() {
   return new Promise((resolve, reject) => {
@@ -46,74 +99,72 @@ function initDataProducts() {
           description TEXT,
           price REAL NOT NULL,
           stock INTEGER NOT NULL,
-          imageUrl TEXT
+          imageUrl TEXT,
+          supplierId INTEGER,
+          active INTEGER DEFAULT 1,
+          FOREIGN KEY (supplierId) REFERENCES suppliers(id)
         )
       `);
 
-      const stmt = db.prepare(
-        "INSERT INTO products (name, description, price, stock, imageUrl) VALUES (?, ?, ?, ?, ?)"
-      );
+      const stmt = db.prepare(`
+        INSERT INTO products (name, description, price, stock, imageUrl, supplierId, active)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `);
 
       const products = [
         [
-          "Camiseta",
-          "Camiseta esportiva confeccionada em 100% algodão, tecido leve e respirável que proporciona conforto durante o dia todo. Ideal para treinos, caminhadas ou uso casual.",
+          "Camiseta Esportiva",
+          "Camiseta 100% algodão, leve e confortável, ideal para treinos e uso casual.",
           59.9,
           20,
           "http://localhost:3000/uploads/camiseta-esportiva.png",
+          1,
+          1,
         ],
         [
-          "Tênis",
-          "Tênis esportivo confortável com solado emborrachado antiderrapante e cabedal respirável. Perfeito para corridas leves, academia e atividades do dia a dia.",
+          "Tênis Running Pro",
+          "Tênis esportivo leve e com amortecimento, ideal para corridas leves e caminhadas.",
           199.9,
           15,
           "http://localhost:3000/uploads/tenis-esportivo.webp",
+          2,
+          1,
         ],
         [
-          "Mochila",
-          "Mochila resistente e prática, com compartimento principal espaçoso, bolsos laterais para garrafas e alças acolchoadas que garantem conforto no transporte.",
+          "Mochila Active",
+          "Mochila resistente e espaçosa, perfeita para academia e uso diário.",
           129.9,
           10,
           "http://localhost:3000/uploads/mochila-esportiva.avif",
-        ],
-        [
-          "Meias",
-          "Pacote com 5 pares de meias esportivas de algodão com elastano, ajustam bem ao pé e oferecem conforto e respirabilidade durante treinos ou uso diário.",
-          29.9,
-          50,
-          "http://localhost:3000/uploads/meias-esportivas.webp",
+          3,
+          1,
         ],
         [
           "Garrafa Térmica",
-          "Garrafa térmica de 750ml em aço inoxidável com isolamento a vácuo, mantendo a bebida gelada por até 12h ou quente por até 6h. Ideal para academia ou escritório.",
+          "Garrafa térmica de aço inoxidável com isolamento a vácuo, ideal para treinos e escritório.",
           89.9,
-          30,
+          25,
           "http://localhost:3000/uploads/garrafa-termica-esportiva.jpg",
-        ],
-        [
-          "Jaqueta Corta-Vento",
-          "Jaqueta leve corta-vento com capuz ajustável e tecido impermeável, ideal para corridas ao ar livre e dias chuvosos. Fácil de dobrar e transportar.",
-          159.9,
-          12,
-          "http://localhost:3000/uploads/jaqueta-corta-vento.avif",
+          4,
+          1,
         ],
         [
           "Relógio Fitness",
-          "Relógio inteligente com monitor de frequência cardíaca, contagem de passos, rastreamento de sono e notificações de celular. Bateria com duração de até 7 dias.",
+          "Relógio inteligente com monitor de frequência cardíaca e rastreamento de sono.",
           249.9,
           8,
           "http://localhost:3000/uploads/relogio-fitness.jpg",
+          5,
+          1,
         ],
       ];
 
-      products.forEach((p) => {
-        stmt.run(p[0], p[1], p[2], p[3], p[4]);
-      });
+      products.forEach((p) => stmt.run(p));
 
       stmt.finalize((err) => {
         if (err) reject(err);
         else {
-          console.log("Produtos de teste criados com sucesso!");
+          console.log("Produtos criados com sucesso!");
           resolve();
         }
       });
@@ -121,8 +172,10 @@ function initDataProducts() {
   });
 }
 
+
 async function seed() {
   try {
+    await initDataSuppliers();
     await initDataProducts();
     await initDataUser();
   } catch (err) {
@@ -130,7 +183,7 @@ async function seed() {
   } finally {
     db.close((err) => {
       if (err) console.error("Erro ao fechar o banco:", err.message);
-      else console.log("Conexão com o banco de dados fechada.");
+      else console.log("Conexão com o banco encerrada.");
     });
   }
 }
