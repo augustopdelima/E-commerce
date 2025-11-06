@@ -37,7 +37,7 @@ export const UpdateProductForm: React.FC<Props> = ({ id, accessToken, userId }) 
     onSuccess: () => {
       alert("Produto atualizado com sucesso!");
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      navigate("/products");
+      navigate("/admin/products");
     },
     onError: (err) => {
       console.error("Erro ao atualizar produto:", err);

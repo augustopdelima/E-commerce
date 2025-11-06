@@ -12,5 +12,5 @@ router.post("/register", upload.single("image"), productController.registerProdu
 router.get("/:id", productController.getProduct);
 router.get("/", productController.getAllProducts);
 router.put("/:id", authMiddleware, isAdmin,  upload.single("image"), productController.updateProduct);
-router.delete("/:id", authMiddleware, isAdmin, productController.deleteProduct);
+router.put("/delete/:id", authMiddleware, isAdmin, productController.deleteProduct);
 export default router;

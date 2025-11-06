@@ -70,7 +70,7 @@ export const productService = {
 
     
     async deleteProduct(id: string, accessToken: string, userId: string) {
-        const res = await api.put(`/product/${id}/deactivate`, null, {
+        const res = await api.put(`/product/delete/${id}`, null, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
                 userid: userId,

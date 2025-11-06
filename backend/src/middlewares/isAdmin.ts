@@ -9,7 +9,8 @@ export async function isAdmin(req: AuthRequest, res: Response, next: NextFunctio
   try {
     const userId = Number(req.headers.userid); 
     if (!userId) return res.status(401).json({ error: "Não autenticado" });
-    
+  
+
     const user = await User.findByPk(userId);
     if (!user || user.type !== "admin") {
       return res.status(403).json({ error: "Acesso restrito a administradores" });

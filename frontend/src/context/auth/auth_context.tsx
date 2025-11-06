@@ -1,145 +1,122 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useState } from "react";
 import type { ReactNode, FC } from "react";
-import { authService, setupInterceptors } from "../../services/auth";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "./auth_hook";
-
-import type { User } from "../../types";
+import { authService, setupInterceptors } from "../../services/auth";
+import type {
+  User,
+  LoginResponse,
+  RegisterResponse,
+  RefreshResponse,
+} from "../../types";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = useState<string | null>(null);
-  const [loadingUser, setLoadingUser] = useState<boolean>(true);
-  const [isRefreshing, setIsRefreshing] = useState<boolean>(false)
-  const refreshPromiseRef = useRef<Promise<{ accessToken: string; refreshToken: string }> | null>(null);
-  const isAuthenticated = !!accessToken && !!user;
+  const queryClient = useQueryClient();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Carrega usuário e tokens do localStorage
+  const { data: user, isLoading: loadingUser } = useQuery<User | null>({
+    queryKey: ["auth", "user"],
+    queryFn: () => {
+      const stored = localStorage.getItem("user");
+      return stored && stored !== "undefined" && stored !== "null"
+        ? JSON.parse(stored)
+        : null;
+    },
+    staleTime: Infinity,
+  });
 
-  const getAccessToken = useCallback(() => {
-    return accessToken;
-  }, [accessToken]);
+  const accessToken = localStorage.getItem("accessToken");
+  const refreshToken = localStorage.getItem("refreshToken");
+  const isAuthenticated = !!user && !!accessToken;
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem("accessToken");
-    const storedUser = localStorage.getItem("user");
-    const storedRefreshToken = localStorage.getItem("refreshToken");
+  const loginMutation = useMutation<
+    LoginResponse,
+    unknown,
+    { email: string; password: string }
+  >({
+    mutationFn: ({ email, password }) => authService.login(email, password),
+    onSuccess: (data) => {
+      const { user: u, accessToken: at, refreshToken: rt } = data;
+      localStorage.setItem("user", JSON.stringify(u));
+      localStorage.setItem("accessToken", at);
+      localStorage.setItem("refreshToken", rt);
+      queryClient.setQueryData(["auth", "user"], u);
+    },
+  });
 
-    if (
-      storedToken &&
-      storedUser &&
-      storedUser !== "undefined" &&
-      storedUser !== "null"
-    ) {
-      setAccessToken(storedToken);
-      setUser(JSON.parse(storedUser));
-      setRefreshToken(storedRefreshToken);
-    }
-    setLoadingUser(false);
-  }, []);
+  const login = useCallback(
+    (email: string, password: string) =>
+      loginMutation.mutateAsync({ email, password }),
+    [loginMutation]
+  );
 
-  const register = async (name: string, email: string, password: string) => {
-    const data = await authService.register(name, email, password);
+  const registerMutation = useMutation<
+    RegisterResponse,
+    unknown,
+    { name: string; email: string; password: string }
+  >({
+    mutationFn: ({ name, email, password }) =>
+      authService.register(name, email, password),
+    onSuccess: (data) => {
+      const { user: u, accessToken: at, refreshToken: rt } = data;
+      localStorage.setItem("user", JSON.stringify(u));
+      localStorage.setItem("accessToken", at);
+      localStorage.setItem("refreshToken", rt);
+      queryClient.setQueryData(["auth", "user"], u);
+    },
+  });
 
-    if (data.accessToken && data.user) {
-      setAccessToken(data.accessToken);
-      setUser(data.user);
-      setRefreshToken(data.refreshToken);
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("refreshToken", data.refreshToken);
-    }
-    return data;
-  };
-
-  const login = async (email: string, password: string) => {
-    const data = await authService.login(email, password);
-    if (data.accessToken && data.user) {
-      setAccessToken(data.accessToken);
-      setUser(data.user);
-      setRefreshToken(data.refreshToken);
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("refreshToken", data.refreshToken);
-    }
-    return data;
-  };
+  const register = useCallback(
+    (name: string, email: string, password: string) =>
+      registerMutation.mutateAsync({ name, email, password }),
+    [registerMutation]
+  );
 
   const logout = useCallback(async () => {
-    setAccessToken(null);
-    setUser(null);
-    setRefreshToken(null);
-    setIsRefreshing(false);
-    localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-  }, []);
+    queryClient.setQueryData(["auth", "user"], null);
+  }, [queryClient]);
 
-
-
-   const refresh = useCallback(async () => {
-    if (!refreshToken) {
+  const refresh = useCallback(async (): Promise<RefreshResponse> => {
+    const storedRefresh = localStorage.getItem("refreshToken");
+    if (!storedRefresh) {
       await logout();
       throw new Error("No refresh token available");
     }
 
-    // If a refresh is already in progress, return the same promise
-    if (refreshPromiseRef.current) {
-      return refreshPromiseRef.current;
-    }
-
     setIsRefreshing(true);
+    try {
+      const newTokens = await authService.refreshToken(storedRefresh);
+      localStorage.setItem("accessToken", newTokens.accessToken);
+      localStorage.setItem("refreshToken", newTokens.refreshToken);
+      return newTokens;
+    } catch (err) {
+      await logout();
+      throw err;
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [logout]);
 
-    const p = authService
-      .refreshToken(refreshToken)
-      .then((newTokens) => {
-        if (newTokens.accessToken) {
-          setAccessToken(newTokens.accessToken);
-          setRefreshToken(newTokens.refreshToken);
-          localStorage.setItem("accessToken", newTokens.accessToken);
-          localStorage.setItem("refreshToken", newTokens.refreshToken);
-          return newTokens;
-        }
-        throw new Error("Failed to refresh token");
-      })
-      .catch(async (err) => {
-        await logout();
-        throw err;
-      })
-      .finally(() => {
-        setIsRefreshing(false);
-        refreshPromiseRef.current = null;
-      });
-
-    refreshPromiseRef.current = p;
-    return p;
-  }, [refreshToken, logout]);
-
-  // ...setupInterceptors effect and provider return...
   useEffect(() => {
     const cleanup = setupInterceptors({
-      getAccessToken,
+      getAccessToken: () => localStorage.getItem("accessToken"),
       refresh,
       logout,
     }) as (() => void) | undefined;
-
-    return () => {
-      if (typeof cleanup === "function") {
-        cleanup();
-      }
-    };
-  }, [getAccessToken, refresh, logout]);
-  
-  
+    return () => cleanup?.();
+  }, [refresh, logout]);
 
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user: user ?? null,
         accessToken,
         refreshToken,
         isAuthenticated,
