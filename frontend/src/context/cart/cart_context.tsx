@@ -1,14 +1,20 @@
-import React, { useState } from "react";
-import { CartContext } from "./cart_hook";
+import React, { useState, useCallback } from "react";
+import { CartContext, type ModalType } from "./cart_hook";
 import type { ProductCart } from "../../types";
 
 interface CartProviderProps {
   children: React.ReactNode;
 }
 
+
+
 /** Provider que gerencia o estado do carrinho */
 export function CartProvider({ children }: CartProviderProps) {
   const [cartItems, setCartItems] = useState<ProductCart[]>([]);
+  const [modalMessage, setModalMessage] = useState<string | null>(null);
+  
+
+  const [modalType, setModalType] = useState<ModalType>("success");
 
   /** Adiciona um produto ao carrinho */
   const addToCart = (product: ProductCart) => {
@@ -62,6 +68,14 @@ export function CartProvider({ children }: CartProviderProps) {
     0
   );
 
+  const showModal = useCallback((message: string, type: ModalType = "success") => {
+    setModalMessage(message);
+    setModalType(type);
+    setTimeout(() => setModalMessage(null), 3000);
+  }, []);
+ 
+  const hideModal = () => setModalMessage(null);
+
   return (
     <CartContext.Provider
       value={{
@@ -72,6 +86,10 @@ export function CartProvider({ children }: CartProviderProps) {
         clearCart,
         totalPrice,
         totalItems,
+        showModal,
+        hideModal,
+        modalMessage,
+        modalType,
       }}
     >
       {children}

@@ -2,15 +2,17 @@ import { useState, type JSX } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { orderService } from "../../services/order";
 import { useAuth } from "../../context/auth";
-import { useCart } from "../../context/cart/cart_hook";
+import { useCart, type ModalType } from "../../context/cart/cart_hook";
 import { AddressSelector } from "./address-selector";
 import type { Order } from "../../types";
+
 
 interface CartSummaryProps {
   userId: string;
   totalItems: number;
   totalPrice: number;
   onClearCart: () => void;
+  onShowModal: (message: string, type:ModalType) => void;
 }
 
 export const CartSummary = ({
@@ -18,11 +20,12 @@ export const CartSummary = ({
   totalItems,
   totalPrice,
   onClearCart,
+  onShowModal,
 }: CartSummaryProps): JSX.Element => {
   const { accessToken } = useAuth();
   const { cartItems } = useCart();
   const [selectedAddress, setSelectedAddress] = useState<number | null>(null);
-  const [message, setMessage] = useState<string>("");
+  
 
   const checkoutMutation = useMutation({
     mutationFn: async () => {
@@ -36,11 +39,11 @@ export const CartSummary = ({
       return await orderService.createOrder(userId, items, accessToken);
     },
     onSuccess: (order: Order) => {
-      setMessage(`Pedido #${order.id} criado com sucesso!`);
+      onShowModal(`Pedido #${order.id} criado com sucesso!`, "success");
       onClearCart();
     },
     onError: () => {
-      setMessage("Erro ao finalizar pedido.");
+      onShowModal("Erro ao finalizar pedido.", "error");
     },
   });
 
@@ -81,10 +84,6 @@ export const CartSummary = ({
         />
       </div>
 
-      
-      {message && (
-        <p className="mt-2 text-sm text-green-600 font-medium">{message}</p>
-      )}
     </aside>
   );
 };
