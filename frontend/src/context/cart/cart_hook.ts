@@ -2,6 +2,8 @@ import { createContext, useContext } from "react";
 
 import type { ProductCart } from "../../types";
 
+export type ModalType = "success" | "error";
+
 interface CartContextType {
   cartItems: ProductCart[];
   addToCart: (product: ProductCart) => void;
@@ -10,6 +12,10 @@ interface CartContextType {
   clearCart: () => void;
   totalPrice: number;
   totalItems: number;
+  modalMessage: string | null;
+  showModal: (message: string, type:ModalType) => void;
+  hideModal: () => void;
+  modalType: ModalType;
 }
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);

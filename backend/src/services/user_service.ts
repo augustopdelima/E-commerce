@@ -1,6 +1,6 @@
 import { User } from "../models";
 import bcrypt from "bcryptjs";
-import { emailFormatChecker } from "../../utils/email_format_checker";
+import { emailFormatChecker } from "../utils/email_format_checker";
 const DEFAULT_TYPE_USER = "client";
 
 

@@ -2,12 +2,11 @@ services:
   backend:
     build:
       context: .
-      target: builder
     container_name: backend
     ports:
       - "3000:3000"
     env_file: .env
     volumes:
-      - .:/app              
-      - /app/node_modules   
-    command: npm run dev
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+    command: sh -c "if [ ! -f /app/data/database.sqlite ]; then echo 'Banco não encontrado, executando seed...' && node seed.js; else echo 'Banco já existe, pulando seed.'; fi && npm run start"

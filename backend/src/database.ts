@@ -1,6 +1,6 @@
 import { Sequelize, Options } from "sequelize";
 
-const DEFAULT_FILE = "./database.sqlite";
+const DEFAULT_FILE = "./data/database.sqlite";
 
 const sequelizeOptions: Options = {
   dialect: "sqlite",
