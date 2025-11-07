@@ -3,34 +3,23 @@ import { useAuth } from "../../../context/auth";
 import { useNavigate } from "react-router";
 
 export const Register = () => {
-  const { register } = useAuth();
+  const { register, registerError, isRegistering } = useAuth();
   const navigate = useNavigate();
 
-  const nameRef: React.Ref<HTMLInputElement> = useRef(null);
-  const emailRef: React.Ref<HTMLInputElement> = useRef(null);
-  const passwordRef: React.Ref<HTMLInputElement> = useRef(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-
-    if (!nameRef.current) return;
-    if (!emailRef.current) return;
-    if (!passwordRef.current) return;
+    if (!nameRef.current || !emailRef.current || !passwordRef.current) return;
 
     const name = nameRef.current.value;
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
 
-    register(name, email, password)
-      .then((data) => {
-        if (data.accessToken) {
-          navigate("/");
-        }
-      })
-      .catch((err) => {
-        console.log("Registration error:", err);
-        alert("Erro ao cadastrar usuário. Tente novamente.");
-      });
+    const data = await register(name, email, password);
+    if (data?.accessToken) navigate("/");
   };
 
   return (
@@ -41,18 +30,13 @@ export const Register = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-         
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
               Nome
             </label>
             <input
               id="name"
               type="text"
-              name="name"
               ref={nameRef}
               placeholder="Digite seu nome"
               required
@@ -60,18 +44,13 @@ export const Register = () => {
             />
           </div>
 
-          
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Email
             </label>
             <input
               id="email"
               type="email"
-              name="email"
               ref={emailRef}
               placeholder="Digite seu email"
               required
@@ -79,18 +58,13 @@ export const Register = () => {
             />
           </div>
 
-         
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Senha
             </label>
             <input
               id="password"
               type="password"
-              name="password"
               ref={passwordRef}
               placeholder="Digite sua senha (mínimo 8 caracteres)"
               minLength={8}
@@ -98,13 +72,19 @@ export const Register = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out placeholder-gray-500"
             />
           </div>
+ 
+          {registerError && (
+            <p className="text-red-600 text-sm font-medium">
+              { "Erro ao cadastrar usuário."}
+            </p>
+          )}
 
-          
           <button
             type="submit"
-            className="w-full py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 transition duration-150 ease-in-out transform hover:scale-[1.01]"
+            disabled={isRegistering}
+            className="w-full py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 transition duration-150 ease-in-out transform hover:scale-[1.01] disabled:opacity-60"
           >
-            Cadastrar
+            {isRegistering? "Cadastrando..." : "Cadastrar"}
           </button>
         </form>
       </section>

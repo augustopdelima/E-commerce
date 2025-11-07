@@ -82,7 +82,7 @@ export function UserController(
       });
     } catch (err: unknown) {
       console.log(err);
-      return res.status(400).json({ erro: "Algo deu errado" });
+      return res.status(400).json({ error: "Algo deu errado" });
     }
   }
 
@@ -113,7 +113,7 @@ export function UserController(
     } catch (err: unknown) {
       console.log(err);
 
-      return res.status(400).json({ erro: "Algo deu errado" });
+      return res.status(400).json({ error: "Algo deu errado" });
     }
   };
 

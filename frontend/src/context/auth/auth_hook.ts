@@ -15,9 +15,13 @@ export interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<RegisterResponse>;
   logout: () => Promise<void>;
   refresh: () => Promise<RefreshResponse>;
+  isLoggingIn:boolean,
+  loginError?: Error | null,
+  isRegistering?: boolean;
+  registerError?: Error | null;
 }
 
-// Valor inicial como `undefined` para forçar uso dentro do provider
+
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 

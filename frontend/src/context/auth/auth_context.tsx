@@ -35,7 +35,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const loginMutation = useMutation<
     LoginResponse,
-    unknown,
+    Error,
     { email: string; password: string }
   >({
     mutationFn: ({ email, password }) => authService.login(email, password),
@@ -54,9 +54,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     [loginMutation]
   );
 
+
   const registerMutation = useMutation<
     RegisterResponse,
-    unknown,
+    Error,
     { name: string; email: string; password: string }
   >({
     mutationFn: ({ name, email, password }) =>
@@ -75,7 +76,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       registerMutation.mutateAsync({ name, email, password }),
     [registerMutation]
   );
-
+  
   const logout = useCallback(async () => {
     localStorage.removeItem("user");
     localStorage.removeItem("accessToken");
@@ -126,6 +127,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         register,
         logout,
         refresh,
+        isLoggingIn: loginMutation.isPending,
+        loginError: loginMutation.error,
+        isRegistering: registerMutation.isPending,
+        registerError: registerMutation.error,
       }}
     >
       {children}
