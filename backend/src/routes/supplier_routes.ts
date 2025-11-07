@@ -14,6 +14,6 @@ router.post("/", isAdmin, createSupplier);
 router.get("/", isAdmin, getSuppliers);
 router.get("/:id", isAdmin, getSupplierById);
 router.put("/:id", isAdmin, updateSupplier);
-router.delete("/:id", isAdmin, deactivateSupplier);
+router.put("/:id/deactivate", isAdmin, deactivateSupplier);
 
 export default router;

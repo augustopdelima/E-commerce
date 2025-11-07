@@ -62,8 +62,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
           revenue: parseFloat(topProductRaw.revenue) || 0,
         }
       : null;
-
-    console.log("total", totalSales);
+ 
 
     return res.json({
       period: { start, end },

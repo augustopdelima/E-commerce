@@ -7,6 +7,7 @@ export class Supplier extends Model {
   declare email: string;
   declare phone: string;
   declare address: string;
+  declare active: boolean;
 }
 
 Supplier.init(

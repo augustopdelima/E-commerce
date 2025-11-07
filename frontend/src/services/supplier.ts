@@ -59,7 +59,7 @@ export const supplierService = {
 
   
   deactivate: async (id: string, accessToken: string, userId: string): Promise<void> => {
-    await api.patch(`/suppliers/${id}/deactivate`, null, {
+    await api.put(`/suppliers/${id}/deactivate`, null, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         userid: userId,
