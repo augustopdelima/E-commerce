@@ -4,12 +4,13 @@ import { formatPrice } from "../../helpers";
 
 interface ListOrdersProps {
   accessToken: string;
+  userId:string;
 }
 
-export const ListOrders = ({ accessToken }: ListOrdersProps) => {
+export const ListOrders = ({ accessToken, userId }: ListOrdersProps) => {
   const { data } = useSuspenseQuery({
     queryKey: ["orders-list"],
-    queryFn: () => orderService.getOrders(accessToken),
+    queryFn: () => orderService.getOrders(accessToken, userId),
   });
 
   if (data.length === 0) {

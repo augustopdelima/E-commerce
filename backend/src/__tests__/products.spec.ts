@@ -4,24 +4,55 @@ import app from "../app";
 import http from "http";
 import { AddressInfo } from "net";
 import { Product } from "../models/product";
+import { User } from "../models";
+
+
+interface LoginResponse {
+  message: string;
+  user: { id: string; email: string; type: string };
+  accessToken: string;
+}
 
 let server: http.Server;
 let baseUrl: string;
+let tokenAdmin = "";
+let userId = "";
 
 beforeAll(async () => {
-  
   await sequelize.sync({ force: true });
-
 
   server = app.listen(0);
   const { port } = server.address() as AddressInfo;
   baseUrl = `http://127.0.0.1:${port.toString()}`;
+
+  // Cria admin
+  const bcrypt = await import("bcrypt");
+  const hashed = await bcrypt.hash("123456", 10);
+
+  await User.create({
+    name: "Admin",
+    email: "admin@example.com",
+    password: hashed,
+    type: "admin",
+  });
+
+  
+  const loginAdmin = await fetch(`${baseUrl}/user/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "admin@example.com", password: "123456" }),
+  });
+
+  const loginAdminData = (await loginAdmin.json()) as LoginResponse;
+  tokenAdmin = loginAdminData.accessToken;
+  userId = loginAdminData.user.id;
 });
 
 afterAll(async () => {
   await sequelize.close();
   server.close();
 });
+
 
 beforeEach(async () => {
   
@@ -40,7 +71,7 @@ describe("Rotas Produto", () => {
   it("Deve cadastrar um novo produto", async () => {
     const res = await fetch(`${baseUrl}/product/register`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", userid: userId, "Authorization":`Bearer ${tokenAdmin}` },
       body: JSON.stringify({
         name: "Bola de basquete",
         description: "Produto oficial de teste",

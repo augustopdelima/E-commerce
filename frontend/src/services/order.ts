@@ -17,15 +17,20 @@ export const orderService = {
         return res.data;
     },
 
-    async getOrdersByUser(userId:string) {
-        const res = await api.get<Order[]>(`/order/${userId}`);
+    async getOrdersByUser(userId:string, token:string) {
+        const res = await api.get<Order[]>(`/order/${userId}`, {
+            headers:{
+                Authorization:`Bearer ${token}`,
+            }
+        });
         return res.data;
     },
 
-    async getOrders(token:string) {
+    async getOrders(token:string, userId:string) {
         const res = await api.get<Order[]>("/order", {
             headers:{
                 Authorization:`Bearer ${token}`,
+                userid:userId
             }
         });
 

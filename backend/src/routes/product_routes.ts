@@ -8,7 +8,7 @@ const router = Router();
 const productService = ProductService();
 const productController = ProductController(productService);
 
-router.post("/register", upload.single("image"), productController.registerProduct);
+router.post("/register", authMiddleware,isAdmin,upload.single("image"), productController.registerProduct);
 router.get("/:id", productController.getProduct);
 router.get("/", productController.getAllProducts);
 router.put("/:id", authMiddleware, isAdmin,  upload.single("image"), productController.updateProduct);

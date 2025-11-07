@@ -36,7 +36,7 @@ export const AdminOrdersPage = () => {
         <section className="max-w-6xl mx-auto px-4 py-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-6">Pedidos</h1>
           <div className="bg-white shadow-md rounded-lg p-4">
-            <ListOrders accessToken={accessToken} />
+            <ListOrders accessToken={accessToken} userId={user.id} />
           </div>
         </section>
       </Suspense>

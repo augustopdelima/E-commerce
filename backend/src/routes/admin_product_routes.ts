@@ -5,18 +5,19 @@ import {
 } from "../controllers/product_controller";
 import { getDashboardStats } from "../controllers/dashboard_controller";
 import { ProductService } from "../services/product_service";
+import { authMiddleware } from "../middlewares/auth";
 
 const router = Router();
 
 const productService = ProductService();
 const productController = ProductController(productService);
 
-router.post("/admin/product", isAdmin, productController.registerProduct);
+router.post("/admin/product", authMiddleware,isAdmin, productController.registerProduct);
 
-router.put("/admin/product/:id", isAdmin,productController.updateProduct);
+router.put("/admin/product/:id", authMiddleware,isAdmin,productController.updateProduct);
 
-router.delete("/admin/product/:id", isAdmin, productController.deleteProduct);
+router.delete("/admin/product/:id", authMiddleware,isAdmin, productController.deleteProduct);
 
-router.get("/admin/dashboard", isAdmin, getDashboardStats )
+router.get("/admin/dashboard", authMiddleware,isAdmin, getDashboardStats )
 
 export default router;
