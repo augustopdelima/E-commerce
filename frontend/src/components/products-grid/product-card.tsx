@@ -31,7 +31,7 @@ export const ProductCard: FC<ProductCardProps> = ({ product }) => {
 
      
       <img
-        src={product.imageUrl || "http://localhost:3000/uploads/placeholder"}
+        src={product.imageUrl || `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/uploads/placeholder`}
         alt={product.name}
         className="w-full h-48 object-cover rounded-lg mb-3"
       />

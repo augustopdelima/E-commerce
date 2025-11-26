@@ -4,6 +4,7 @@ import { Product } from "./product";
 import { OrderItem } from "./order_item";
 import { Address } from "./addresses";
 import { Supplier } from "./supplier";
+import { CartItem } from "./cart_item";
 
 User.hasMany(Order, { foreignKey: "userId", as: "orders" });
 Order.belongsTo(User, { foreignKey: "userId", as: "user" });
@@ -31,4 +32,10 @@ Address.belongsTo(User, { foreignKey: "userId", as: "user" });
 Product.belongsTo(Supplier, { as: "supplier", foreignKey: "supplierId" });
 Supplier.hasMany(Product, { as: "products", foreignKey: "supplierId" });
 
-export { User, Order, Product, OrderItem, Supplier };
+User.hasMany(CartItem, { foreignKey: "userId", as: "cartItems" });
+CartItem.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+Product.hasMany(CartItem, { foreignKey: "productId", as: "cartItems" });
+CartItem.belongsTo(Product, { foreignKey: "productId", as: "product" });
+
+export { User, Order, Product, OrderItem, Supplier, CartItem };

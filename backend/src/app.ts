@@ -1,6 +1,7 @@
 import express from "express";
 import { userRoutes, productRoutes, addressRoutes, orderRoutes, checkoutRoutes, supplierRoutes } from "./routes";
 import adminProductRoutes from "./routes/admin_product_routes";
+import cartRoutes from "./routes/cart_routes";
 import cors, { CorsOptions } from "cors";
 import path from "path";
 const app = express();
@@ -30,6 +31,7 @@ app.use(checkoutRoutes);
 app.use("/address", addressRoutes);
 app.use("/order", orderRoutes);
 app.use("/suppliers",supplierRoutes);
+app.use("/cart", cartRoutes);
 app.use(adminProductRoutes);
 
 export default app;
