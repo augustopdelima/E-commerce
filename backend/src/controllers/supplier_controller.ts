@@ -74,3 +74,27 @@ export const deactivateSupplier = async (req: Request<{ id: string }>, res: Resp
     return res.status(500).json({ message: "Erro ao inativar fornecedor" });
   }
 };
+
+export const reactivateSupplier = async (req: Request<{ id: string }>, res: Response) => {
+  try {
+    const { id } = req.params;
+    const supplier = await Supplier.findByPk(id);
+    if (!supplier) return res.status(404).json({ message: "Fornecedor não encontrado" });
+
+    await supplier.update({ active: true });
+    return res.json({ message: "Fornecedor reativado com sucesso", supplier });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erro ao reativar fornecedor" });
+  }
+};
+
+export const  listDeactivatedSuppliers = async (_req: Request, res: Response) => {
+  try {
+    const suppliers = await Supplier.findAll({ where: { active: false } });
+    return res.json(suppliers);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erro ao buscar fornecedores inativados" });
+  }
+}

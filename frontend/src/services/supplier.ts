@@ -66,4 +66,23 @@ export const supplierService = {
       },
     });
   },
+
+  reactivate: async (id: string, accessToken: string, userId: string): Promise<void> => {
+    await api.put(`/suppliers/reactivate/${id}`, null, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        userid: userId,
+      },
+    });
+  },
+
+  listDeactivated: async (accessToken: string, userId: string): Promise<Supplier[]> => {
+    const res = await api.get("/suppliers/deactivated",{
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        userid: userId,
+      },
+    });
+    return res.data;
+  }
 };

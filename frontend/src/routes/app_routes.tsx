@@ -16,6 +16,7 @@ import {
   Dashboard,
   SupplierFormPage,
   SupplierList,
+  DeactivatedSuppliers
 } from "../pages/admin/";
 import { AdminLayout } from "../layouts/admin";
 import { UserLayout } from "../layouts/user/user-layout";
@@ -134,6 +135,14 @@ export const AppRoutes = () => {
           element={
             <AdminRoute>
               <SupplierFormPage />
+            </AdminRoute>
+          }
+        />
+        <Route 
+          path="suppliers/reactivate"
+          element={
+            <AdminRoute>
+              <DeactivatedSuppliers />
             </AdminRoute>
           }
         />

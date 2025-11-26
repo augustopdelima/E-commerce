@@ -219,4 +219,93 @@ describe("Rota /suppliers", () => {
 
     Supplier.findAll = originalFindAll;
   });
+
+    it("Deve desativar um fornecedor e listá-lo entre os desativados", async () => {
+    // Cria fornecedor ativo
+    const supplier = await Supplier.create({
+      name: "Fornecedor Desativável",
+      email: "desativa@teste.com",
+      phone: "4444-4444",
+      active: true,
+    });
+
+    // Desativa fornecedor
+    const res = await fetch(
+      `${baseUrl}/suppliers/${supplier.id.toString()}/deactivate`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${tokenAdmin}`,
+          userid: userId,
+        },
+      }
+    );
+
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data).toHaveProperty("message", "Fornecedor inativado com sucesso");
+
+    // Confirma que ficou inativo no banco
+    const updated = await Supplier.findByPk(supplier.id);
+    expect(updated?.active).toBe(false);
+
+    // Lista desativados
+    const resList = await fetch(`${baseUrl}/suppliers/deactivated`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${tokenAdmin}`,
+        userid: userId,
+      },
+    });
+
+    expect(resList.status).toBe(200);
+    const listData = (await resList.json()) as SupplierResponse[];
+
+    expect(Array.isArray(listData)).toBe(true);
+    expect(listData.some((s) => s.id === supplier.id)).toBe(true);
+    expect(listData.every((s) => !s.active)).toBe(true);
+  });
+
+  it("Deve reativar fornecedor desativado com sucesso", async () => {
+    const supplier = await Supplier.create({
+      name: "Fornecedor Reativável",
+      email: "reativa@teste.com",
+      phone: "3333-3333",
+      active: false,
+    });
+
+    const res = await fetch(
+      `${baseUrl}/suppliers/reactivate/${supplier.id.toString()}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${tokenAdmin}`,
+          userid: userId,
+        },
+      }
+    );
+
+    expect(res.status).toBe(200);
+
+    const data = await res.json();
+    expect(data).toHaveProperty("message", "Fornecedor reativado com sucesso");
+
+    const updated = await Supplier.findByPk(supplier.id);
+    expect(updated?.active).toBe(true);
+  });
+
+  it("Deve retornar 404 ao tentar reativar fornecedor inexistente", async () => {
+    const res = await fetch(`${baseUrl}/suppliers/reactivate/9999`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${tokenAdmin}`,
+        userid: userId,
+      },
+    });
+
+    expect(res.status).toBe(404);
+    const data = await res.json();
+    expect(data).toHaveProperty("message", "Fornecedor não encontrado");
+  });
+
 });
