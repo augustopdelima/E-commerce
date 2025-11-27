@@ -9,8 +9,15 @@ Projeto de E-commerce disicplina dev-2
 
 2. Execute o servidor:
    ```bash
-   npx tsx src/server.ts
+   npm run dev
    ```
+
+3. Execute o frontend:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
 
 - O banco de dados será criado automaticamente em `backend/database.sqlite`.
 - O modelo de usuários já está configurado (id, name, email, password, type).
